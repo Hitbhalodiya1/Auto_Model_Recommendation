@@ -40,8 +40,8 @@ class PreprocessingResult:
 
     def __init__(
         self,
-        X_train: np.ndarray | None = None,
-        X_test: np.ndarray | None = None,
+        x_train: np.ndarray | None = None,
+        x_test: np.ndarray | None = None,
         y_train: np.ndarray | None = None,
         y_test: np.ndarray | None = None,
         feature_names: list[str] | None = None,
@@ -49,10 +49,10 @@ class PreprocessingResult:
         label_encoder: LabelEncoder | None = None,
         **kwargs: Any,
     ) -> None:
-        if X_train is None and "x_train" in kwargs:
-            X_train = kwargs.pop("x_train")
-        if X_test is None and "x_test" in kwargs:
-            X_test = kwargs.pop("x_test")
+        if x_train is None and "x_train" in kwargs:
+            x_train = kwargs.pop("x_train")
+        if x_test is None and "x_test" in kwargs:
+            x_test = kwargs.pop("x_test")
         if y_train is None and "y_train" in kwargs:
             y_train = kwargs.pop("y_train")
         if y_test is None and "y_test" in kwargs:
@@ -68,8 +68,8 @@ class PreprocessingResult:
             unexpected = ", ".join(sorted(kwargs))
             raise TypeError(f"Unexpected keyword arguments: {unexpected}")
 
-        self.X_train = X_train
-        self.X_test = X_test
+        self.X_train = x_train
+        self.X_test = x_test
         self.y_train = y_train
         self.y_test = y_test
         self.feature_names = feature_names or []
