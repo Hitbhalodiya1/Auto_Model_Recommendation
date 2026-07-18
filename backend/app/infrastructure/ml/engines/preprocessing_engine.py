@@ -51,14 +51,24 @@ class PreprocessingResult:
     ) -> None:
         if x_train is None and "x_train" in kwargs:
             x_train = kwargs.pop("x_train")
+        if x_train is None and "X_train" in kwargs:
+            x_train = kwargs.pop("X_train")
         if x_test is None and "x_test" in kwargs:
             x_test = kwargs.pop("x_test")
+        if x_test is None and "X_test" in kwargs:
+            x_test = kwargs.pop("X_test")
         if y_train is None and "y_train" in kwargs:
             y_train = kwargs.pop("y_train")
+        if y_train is None and "Y_train" in kwargs:
+            y_train = kwargs.pop("Y_train")
         if y_test is None and "y_test" in kwargs:
             y_test = kwargs.pop("y_test")
+        if y_test is None and "Y_test" in kwargs:
+            y_test = kwargs.pop("Y_test")
         if feature_names is None and "feature_names" in kwargs:
             feature_names = kwargs.pop("feature_names")
+        if feature_names is None and "featureNames" in kwargs:
+            feature_names = kwargs.pop("featureNames")
         if pipeline is None and "pipeline" in kwargs:
             pipeline = kwargs.pop("pipeline")
         if label_encoder is None and "label_encoder" in kwargs:
