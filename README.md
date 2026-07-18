@@ -133,12 +133,7 @@ This project uses GitHub Actions for continuous integration and deployment. The 
 
 ### Container Registry
 
-Docker images are pushed to GitHub Container Registry (GHCR) using the built-in `GITHUB_TOKEN`. No additional secrets configuration is required. Images will be available at:
-
-- `ghcr.io/hitbhalodiya1/autorec-backend:latest`
-- `ghcr.io/hitbhalodiya1/autorec-frontend:latest`
-
-Note: Repository names are automatically converted to lowercase for Docker compliance.
+Docker images are built in CI but not pushed to a registry. To push images, configure your preferred registry (Docker Hub, GHCR, etc.) and update the workflow files with appropriate authentication.
 
 ### Node Version
 
