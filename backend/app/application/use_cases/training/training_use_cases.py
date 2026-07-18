@@ -80,6 +80,7 @@ def _map_model_result(mr: ModelResult) -> ModelResultDTO:
 
 # ── Experiment CRUD ───────────────────────────────────────────────────────────
 
+
 class CreateExperimentUseCase:
     def __init__(
         self,
@@ -144,6 +145,7 @@ class DeleteExperimentUseCase:
 
 
 # ── Preprocessing ─────────────────────────────────────────────────────────────
+
 
 class RecommendPreprocessingUseCase:
     def __init__(
@@ -216,6 +218,7 @@ class ExecutePreprocessingUseCase:
         df = _read_dataframe(file_bytes, dataset.original_name)
 
         from app.core.config import get_settings
+
         settings = get_settings()
 
         result = self._engine.execute(
@@ -228,14 +231,16 @@ class ExecutePreprocessingUseCase:
         )
 
         # Serialize and save preprocessed data
-        artifact = pickle.dumps({
-            "X_train": result.X_train,
-            "X_test": result.X_test,
-            "y_train": result.y_train,
-            "y_test": result.y_test,
-            "feature_names": result.feature_names,
-            "label_encoder": result.label_encoder,
-        })
+        artifact = pickle.dumps(
+            {
+                "X_train": result.X_train,
+                "X_test": result.X_test,
+                "y_train": result.y_train,
+                "y_test": result.y_test,
+                "feature_names": result.feature_names,
+                "label_encoder": result.label_encoder,
+            }
+        )
         artifact_path = f"experiments/{experiment_id}/preprocessed_data.pkl"
         await self._storage.save_artifact(artifact, artifact_path)
 
@@ -251,6 +256,7 @@ class ExecutePreprocessingUseCase:
 
 
 # ── Training ──────────────────────────────────────────────────────────────────
+
 
 class RunTrainingUseCase:
     """
@@ -280,15 +286,13 @@ class RunTrainingUseCase:
             raise PreprocessingNotCompleteError(experiment_id)
 
         # Load preprocessed data
-        data_bytes = await self._storage.read_file(
-            exp.preprocessing_pipeline.pipeline_path
-        )
+        data_bytes = await self._storage.read_file(exp.preprocessing_pipeline.pipeline_path)
         data = pickle.loads(data_bytes)
-        X_train = data["X_train"]
-        X_test = data["X_test"]
+        x_train = data["X_train"]
+        x_test = data["X_test"]
         y_train = data["y_train"]
         y_test = data["y_test"]
-        feature_names = data["feature_names"]
+        _ = data["feature_names"]
 
         task_type = TaskType(exp.task_type)
 
@@ -297,7 +301,7 @@ class RunTrainingUseCase:
 
         # Train all compatible models
         training_results = self._training_engine.train_all(
-            X_train, y_train, X_test, y_test, task_type, experiment_id
+            x_train, y_train, x_test, y_test, task_type, experiment_id
         )
 
         exp.transition_to(ExperimentStatus.EVALUATING)
@@ -305,7 +309,7 @@ class RunTrainingUseCase:
 
         # Evaluate
         evaluations = self._evaluation_engine.evaluate_all(
-            training_results, X_train, y_train, X_test, y_test, task_type
+            training_results, x_train, y_train, x_test, y_test, task_type
         )
 
         # Convert to ModelResult entities and save
@@ -324,7 +328,9 @@ class RunTrainingUseCase:
                     mr.model_path = artifact_path
                     await self._exp_repo.save_model_result(mr)
                 except Exception as exc:
-                    logger.warning("model_serialization_failed", config=mr.config_name, error=str(exc))
+                    logger.warning(
+                        "model_serialization_failed", config=mr.config_name, error=str(exc)
+                    )
 
         # Generate recommendation
         recommendation = self._recommendation_engine.recommend(
@@ -359,6 +365,7 @@ class RunTrainingUseCase:
 
 # ── Evaluation Results ────────────────────────────────────────────────────────
 
+
 class GetEvaluationResultsUseCase:
     def __init__(self, experiment_repo: IExperimentRepository) -> None:
         self._repo = experiment_repo
@@ -372,6 +379,7 @@ class GetEvaluationResultsUseCase:
 
 
 # ── Recommendation ────────────────────────────────────────────────────────────
+
 
 class GetRecommendationUseCase:
     def __init__(self, experiment_repo: IExperimentRepository) -> None:
@@ -404,6 +412,7 @@ class GetRecommendationUseCase:
 
 # ── Explainability ────────────────────────────────────────────────────────────
 
+
 class ExplainModelUseCase:
     def __init__(
         self,
@@ -423,12 +432,13 @@ class ExplainModelUseCase:
         mr = await self._exp_repo.get_model_result_by_id(model_id)
         if not mr:
             from app.domain.exceptions.domain_exceptions import ModelResultNotFoundError
+
             raise ModelResultNotFoundError(model_id)
 
         # Load preprocessed data and serialized model
         data_bytes = await self._storage.read_file(exp.preprocessing_pipeline.pipeline_path)
         data = pickle.loads(data_bytes)
-        X_train, X_test = data["X_train"], data["X_test"]
+        x_train, x_test = data["X_train"], data["X_test"]
         feature_names = data["feature_names"]
 
         model_bytes = await self._storage.read_file(mr.model_path)
@@ -436,8 +446,8 @@ class ExplainModelUseCase:
 
         explanation = self._engine.explain(
             estimator=estimator,
-            X_train=X_train,
-            X_test=X_test,
+            x_train=x_train,
+            x_test=x_test,
             feature_names=feature_names,
             model_result=mr,
         )

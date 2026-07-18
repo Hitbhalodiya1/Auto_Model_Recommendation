@@ -37,16 +37,16 @@ class EvaluationResult:
 
 # ── Per-task Evaluators ───────────────────────────────────────────────────────
 
+
 class BaseEvaluator(ABC):
     @abstractmethod
     def compute(
         self,
         estimator: Any,
         predictions: np.ndarray,
-        X_test: np.ndarray,
+        x_test: np.ndarray,
         y_test: np.ndarray,
-    ) -> dict[str, float]:
-        ...
+    ) -> dict[str, float]: ...
 
     @property
     @abstractmethod
@@ -70,7 +70,7 @@ class BinaryClassificationEvaluator(BaseEvaluator):
     def primary_metric(self) -> str:
         return "f1_score"
 
-    def compute(self, estimator, predictions, X_test, y_test) -> dict[str, float]:
+    def compute(self, estimator, predictions, x_test, y_test) -> dict[str, float]:
         from sklearn.metrics import (
             accuracy_score,
             confusion_matrix,
@@ -90,10 +90,10 @@ class BinaryClassificationEvaluator(BaseEvaluator):
         # ROC-AUC requires probability estimates
         try:
             if hasattr(estimator, "predict_proba"):
-                proba = estimator.predict_proba(X_test)[:, 1]
+                proba = estimator.predict_proba(x_test)[:, 1]
                 metrics["roc_auc"] = round(float(roc_auc_score(y_test, proba)), 4)
             elif hasattr(estimator, "decision_function"):
-                scores = estimator.decision_function(X_test)
+                scores = estimator.decision_function(x_test)
                 metrics["roc_auc"] = round(float(roc_auc_score(y_test, scores)), 4)
         except Exception:
             pass
@@ -117,7 +117,7 @@ class MulticlassEvaluator(BaseEvaluator):
     def primary_metric(self) -> str:
         return "f1_weighted"
 
-    def compute(self, estimator, predictions, X_test, y_test) -> dict[str, float]:
+    def compute(self, estimator, predictions, x_test, y_test) -> dict[str, float]:
         from sklearn.metrics import (
             accuracy_score,
             f1_score,
@@ -127,10 +127,18 @@ class MulticlassEvaluator(BaseEvaluator):
 
         return {
             "accuracy": round(float(accuracy_score(y_test, predictions)), 4),
-            "precision_macro": round(float(precision_score(y_test, predictions, average="macro", zero_division=0)), 4),
-            "recall_macro": round(float(recall_score(y_test, predictions, average="macro", zero_division=0)), 4),
-            "f1_macro": round(float(f1_score(y_test, predictions, average="macro", zero_division=0)), 4),
-            "f1_weighted": round(float(f1_score(y_test, predictions, average="weighted", zero_division=0)), 4),
+            "precision_macro": round(
+                float(precision_score(y_test, predictions, average="macro", zero_division=0)), 4
+            ),
+            "recall_macro": round(
+                float(recall_score(y_test, predictions, average="macro", zero_division=0)), 4
+            ),
+            "f1_macro": round(
+                float(f1_score(y_test, predictions, average="macro", zero_division=0)), 4
+            ),
+            "f1_weighted": round(
+                float(f1_score(y_test, predictions, average="weighted", zero_division=0)), 4
+            ),
         }
 
 
@@ -143,7 +151,7 @@ class RegressionEvaluator(BaseEvaluator):
     def primary_metric(self) -> str:
         return "r2_score"
 
-    def compute(self, estimator, predictions, X_test, y_test) -> dict[str, float]:
+    def compute(self, estimator, predictions, x_test, y_test) -> dict[str, float]:
         from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
         mae = float(mean_absolute_error(y_test, predictions))
@@ -160,6 +168,7 @@ class RegressionEvaluator(BaseEvaluator):
 
 
 # ── Evaluation Engine ─────────────────────────────────────────────────────────
+
 
 class EvaluationEngine:
     """
@@ -178,9 +187,9 @@ class EvaluationEngine:
     def evaluate_all(
         self,
         training_results: list[TrainingResult],
-        X_train: np.ndarray,
+        x_train: np.ndarray,
         y_train: np.ndarray,
-        X_test: np.ndarray,
+        x_test: np.ndarray,
         y_test: np.ndarray,
         task_type: TaskType,
     ) -> list[EvaluationResult]:
@@ -193,7 +202,7 @@ class EvaluationEngine:
             if not tr.succeeded:
                 continue
             try:
-                ev = self._evaluate_one(tr, X_train, y_train, X_test, y_test, task_type)
+                ev = self._evaluate_one(tr, x_train, y_train, x_test, y_test, task_type)
                 evaluations.append(ev)
             except Exception as exc:
                 logger.warning(
@@ -214,9 +223,9 @@ class EvaluationEngine:
     def _evaluate_one(
         self,
         tr: TrainingResult,
-        X_train: np.ndarray,
+        x_train: np.ndarray,
         y_train: np.ndarray,
-        X_test: np.ndarray,
+        x_test: np.ndarray,
         y_test: np.ndarray,
         task_type: TaskType,
     ) -> EvaluationResult:
@@ -225,7 +234,7 @@ class EvaluationEngine:
         if not evaluator:
             raise ValueError(f"No evaluator for task type: {task_type}")
 
-        metrics = evaluator.compute(tr.estimator, tr.predictions, X_test, y_test)
+        metrics = evaluator.compute(tr.estimator, tr.predictions, x_test, y_test)
 
         # Cross-validation
         cv_scores = np.array([0.0])
@@ -234,7 +243,7 @@ class EvaluationEngine:
             try:
                 cv_scores = cross_val_score(
                     tr.estimator,
-                    X_train,
+                    x_train,
                     y_train,
                     cv=self._settings.CV_FOLDS,
                     scoring=evaluator.cv_scoring,

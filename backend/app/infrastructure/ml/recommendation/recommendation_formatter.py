@@ -22,6 +22,7 @@ logger = get_logger(__name__)
 @dataclass
 class FormattedRecommendation:
     """Formatted recommendation for API response."""
+
     mode: str
     model_id: str
     config_name: str
@@ -39,6 +40,7 @@ class FormattedRecommendation:
 @dataclass
 class FormattedRanking:
     """Formatted ranking entry for all_rankings list."""
+
     rank: int
     config_name: str
     display_name: str
@@ -51,6 +53,7 @@ class FormattedRanking:
 @dataclass
 class FormattedRecommendations:
     """All formatted recommendations for API response."""
+
     best_overall: FormattedRecommendation | None
     best_predictive: FormattedRecommendation | None
     fastest: FormattedRecommendation | None
@@ -61,7 +64,7 @@ class FormattedRecommendations:
 class RecommendationFormatter:
     """
     Formats recommendation results for API responses.
-    
+
     This component ensures backward compatibility with existing DTOs
     while supporting the new multi-mode recommendation structure.
     """
@@ -77,12 +80,12 @@ class RecommendationFormatter:
     ) -> FormattedRecommendations:
         """
         Format all recommendations for API response.
-        
+
         Args:
             multi_mode_recommendations: Recommendations for all modes
             explanations: Explanations for each model
             model_results: List of all model results
-            
+
         Returns:
             FormattedRecommendations with all formatted data
         """
@@ -162,7 +165,7 @@ class RecommendationFormatter:
             display_name=explanation.display_name,
             overall_score=candidate.scores.overall_score,
             score_breakdown=candidate.scores.score_breakdown,
-            rationale=explanation.strengths,  # Use strengths as rationale for backward compatibility
+            rationale=explanation.strengths,
             explanation_text=explanation.explanation_text,
             strengths=explanation.strengths,
             weaknesses=explanation.weaknesses,
@@ -200,7 +203,7 @@ class RecommendationFormatter:
     ) -> dict[str, Any]:
         """
         Format recommendations for backward compatibility with existing API.
-        
+
         Returns a dict compatible with the existing RecommendationDTO structure.
         """
         # Use best_overall as the primary recommendation for backward compatibility
@@ -232,21 +235,43 @@ class RecommendationFormatter:
             ],
             # New fields for multi-mode support
             "best_predictive": {
-                "model_id": formatted.best_predictive.model_id if formatted.best_predictive else None,
-                "config_name": formatted.best_predictive.config_name if formatted.best_predictive else None,
-                "display_name": formatted.best_predictive.display_name if formatted.best_predictive else None,
-                "overall_score": formatted.best_predictive.overall_score if formatted.best_predictive else None,
-            } if formatted.best_predictive else None,
+                "model_id": formatted.best_predictive.model_id
+                if formatted.best_predictive
+                else None,
+                "config_name": formatted.best_predictive.config_name
+                if formatted.best_predictive
+                else None,
+                "display_name": formatted.best_predictive.display_name
+                if formatted.best_predictive
+                else None,
+                "overall_score": formatted.best_predictive.overall_score
+                if formatted.best_predictive
+                else None,
+            }
+            if formatted.best_predictive
+            else None,
             "fastest": {
                 "model_id": formatted.fastest.model_id if formatted.fastest else None,
                 "config_name": formatted.fastest.config_name if formatted.fastest else None,
                 "display_name": formatted.fastest.display_name if formatted.fastest else None,
                 "overall_score": formatted.fastest.overall_score if formatted.fastest else None,
-            } if formatted.fastest else None,
+            }
+            if formatted.fastest
+            else None,
             "most_explainable": {
-                "model_id": formatted.most_explainable.model_id if formatted.most_explainable else None,
-                "config_name": formatted.most_explainable.config_name if formatted.most_explainable else None,
-                "display_name": formatted.most_explainable.display_name if formatted.most_explainable else None,
-                "overall_score": formatted.most_explainable.overall_score if formatted.most_explainable else None,
-            } if formatted.most_explainable else None,
+                "model_id": formatted.most_explainable.model_id
+                if formatted.most_explainable
+                else None,
+                "config_name": formatted.most_explainable.config_name
+                if formatted.most_explainable
+                else None,
+                "display_name": formatted.most_explainable.display_name
+                if formatted.most_explainable
+                else None,
+                "overall_score": formatted.most_explainable.overall_score
+                if formatted.most_explainable
+                else None,
+            }
+            if formatted.most_explainable
+            else None,
         }

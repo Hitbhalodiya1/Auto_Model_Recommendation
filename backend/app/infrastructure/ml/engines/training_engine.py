@@ -49,9 +49,9 @@ class TrainingEngine:
 
     def train_all(
         self,
-        X_train: np.ndarray,
+        x_train: np.ndarray,
         y_train: np.ndarray,
-        X_test: np.ndarray,
+        x_test: np.ndarray,
         y_test: np.ndarray,
         task_type: TaskType,
         experiment_id: str,
@@ -82,9 +82,9 @@ class TrainingEngine:
                 executor.submit(
                     self._train_one,
                     config,
-                    X_train,
+                    x_train,
                     y_train,
-                    X_test,
+                    x_test,
                     y_test,
                 ): config
                 for config in configs
@@ -108,13 +108,15 @@ class TrainingEngine:
                         config=config.name,
                         error=str(exc),
                     )
-                    results.append(TrainingResult(
-                        config=config,
-                        estimator=None,
-                        predictions=None,
-                        train_score=None,
-                        error=str(exc),
-                    ))
+                    results.append(
+                        TrainingResult(
+                            config=config,
+                            estimator=None,
+                            predictions=None,
+                            train_score=None,
+                            error=str(exc),
+                        )
+                    )
 
         successes = sum(1 for r in results if r.succeeded)
         logger.info(
@@ -129,9 +131,9 @@ class TrainingEngine:
     def _train_one(
         self,
         config: ModelConfig,
-        X_train: np.ndarray,
+        x_train: np.ndarray,
         y_train: np.ndarray,
-        X_test: np.ndarray,
+        x_test: np.ndarray,
         y_test: np.ndarray,
     ) -> TrainingResult:
         """
@@ -146,14 +148,14 @@ class TrainingEngine:
             # The requires_scaling flag here is preserved for models that need their
             # own internal pipeline (e.g., when called without the preprocessing engine).
             t0 = time.perf_counter()
-            estimator.fit(X_train, y_train)
+            estimator.fit(x_train, y_train)
             training_time = time.perf_counter() - t0
 
             # Train score (for overfitting detection)
-            train_score = float(estimator.score(X_train, y_train))
+            train_score = float(estimator.score(x_train, y_train))
 
             t1 = time.perf_counter()
-            predictions = estimator.predict(X_test)
+            predictions = estimator.predict(x_test)
             prediction_time = time.perf_counter() - t1
 
             return TrainingResult(

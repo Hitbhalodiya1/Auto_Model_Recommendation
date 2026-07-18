@@ -53,7 +53,7 @@ class RecommendationEngine:
     """
     Scores and ranks all evaluated models, selects the best,
     and produces a structured Recommendation with explanation text.
-    
+
     Refactored to use modular recommendation components while maintaining
     backward compatibility with the existing API.
     """
@@ -78,10 +78,10 @@ class RecommendationEngine:
     ) -> Recommendation:
         """
         Score all models, select the best, and return a Recommendation entity.
-        
+
         Refactored to use the new modular recommendation pipeline while
         maintaining backward compatibility with the existing API.
-        
+
         Args:
             evaluations: List of evaluation results (kept for backward compatibility)
             model_results: List of model results from training
@@ -89,7 +89,7 @@ class RecommendationEngine:
             experiment_id: Experiment ID
             dataset_analysis: Optional dataset analysis results for compatibility analysis
             model_configs: Optional mapping of model_id to ModelConfig
-            
+
         Returns:
             Recommendation entity with the recommended model
         """
@@ -117,9 +117,7 @@ class RecommendationEngine:
 
         if not primary:
             # Fallback to legacy scoring if pipeline fails
-            return self._legacy_recommend(
-                evaluations, model_results, task_type, experiment_id
-            )
+            return self._legacy_recommend(evaluations, model_results, task_type, experiment_id)
 
         # Build backward-compatible Recommendation entity
         all_rankings = [
@@ -155,9 +153,7 @@ class RecommendationEngine:
 
     # ── Backward Compatibility Helpers ─────────────────────────────────────────
 
-    def _build_model_configs_from_results(
-        self, model_results: list[ModelResult]
-    ) -> dict[str, Any]:
+    def _build_model_configs_from_results(self, model_results: list[ModelResult]) -> dict[str, Any]:
         """Build model configs from model results for backward compatibility."""
         from app.domain.interfaces.registry.model_registry import ModelConfig
 
@@ -189,9 +185,7 @@ class RecommendationEngine:
 
         # Score each model
         scored = [
-            self._score_result(mr, weights, model_results)
-            for mr in model_results
-            if mr.succeeded
+            self._score_result(mr, weights, model_results) for mr in model_results if mr.succeeded
         ]
         scored.sort(key=lambda s: s.composite_score, reverse=True)
 
@@ -304,15 +298,14 @@ class RecommendationEngine:
         primary_metric_name = self._primary_metric_name(task_type)
         primary_val = mr.primary_metric
 
-        parts = [
-            f"**{mr.display_name}** was selected as the best model for this experiment."
-        ]
+        parts = [f"**{mr.display_name}** was selected as the best model for this experiment."]
 
         if primary_val is not None:
             parts.append(
                 f"It achieved the highest {primary_metric_name} of {primary_val:.4f}"
                 + (
-                    f" with strong cross-validation consistency (CV score: {mr.cv_score:.4f} ± {mr.cv_std:.4f})"
+                    " with strong cross-validation consistency "
+                    f"(CV score: {mr.cv_score:.4f} ± {mr.cv_std:.4f})"
                     if mr.cv_score is not None
                     else ""
                 )
@@ -321,7 +314,8 @@ class RecommendationEngine:
 
         if not mr.is_overfitting:
             parts.append(
-                "The model shows no signs of overfitting, indicating good generalization to unseen data."
+                "The model shows no signs of overfitting, "
+                "indicating good generalization to unseen data."
             )
         else:
             parts.append(
@@ -329,7 +323,13 @@ class RecommendationEngine:
                 "reducing model complexity."
             )
 
-        interp_labels = {1: "black box", 2: "low", 3: "moderate", 4: "high", 5: "fully interpretable"}
+        interp_labels = {
+            1: "black box",
+            2: "low",
+            3: "moderate",
+            4: "high",
+            5: "fully interpretable",
+        }
         interp_label = interp_labels.get(mr.interpretability_score, "unknown")
         parts.append(
             f"The model has {interp_label} interpretability (score {mr.interpretability_score}/5)."
@@ -339,7 +339,8 @@ class RecommendationEngine:
             runner_up = all_scored[1].model_result
             parts.append(
                 f"The runner-up was {runner_up.display_name} "
-                f"(composite score: {all_scored[1].composite_score:.4f} vs {best.composite_score:.4f})."
+                f"(composite score: {all_scored[1].composite_score:.4f} "
+                f"vs {best.composite_score:.4f})."
             )
 
         return " ".join(parts)

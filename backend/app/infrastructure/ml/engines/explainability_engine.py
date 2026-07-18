@@ -29,7 +29,7 @@ class ExplainabilityResult:
 
     model_result_id: str
     feature_importances: list[FeatureImportanceEntry] = field(default_factory=list)
-    shap_values: list[list[float]] | None = None   # shape [n_samples, n_features]
+    shap_values: list[list[float]] | None = None  # shape [n_samples, n_features]
     shap_base_value: float | None = None
     top_features: list[str] = field(default_factory=list)
     method_used: str = "unknown"
@@ -45,8 +45,8 @@ class ExplainabilityEngine:
     def explain(
         self,
         estimator: Any,
-        X_train: np.ndarray,
-        X_test: np.ndarray,
+        x_train: np.ndarray,
+        x_test: np.ndarray,
         feature_names: list[str],
         model_result: ModelResult,
         max_shap_samples: int = SHAP_MAX_BACKGROUND_SAMPLES,
@@ -58,7 +58,7 @@ class ExplainabilityEngine:
         result = ExplainabilityResult(model_result_id=model_result.id)
 
         # 1. Feature importance
-        importances = self._get_feature_importance(estimator, X_train, X_test, feature_names)
+        importances = self._get_feature_importance(estimator, x_train, x_test, feature_names)
         result.feature_importances = importances
         result.top_features = [fi.feature for fi in importances[:FEATURE_IMPORTANCE_TOP_N]]
         result.method_used = self._detect_method(estimator)
@@ -67,7 +67,7 @@ class ExplainabilityEngine:
         if model_result.supports_shap:
             try:
                 shap_vals, base_val = self._compute_shap(
-                    estimator, X_train, X_test, max_shap_samples
+                    estimator, x_train, x_test, max_shap_samples
                 )
                 result.shap_values = shap_vals
                 result.shap_base_value = base_val
@@ -86,8 +86,8 @@ class ExplainabilityEngine:
     def _get_feature_importance(
         self,
         estimator: Any,
-        X_train: np.ndarray,
-        X_test: np.ndarray,
+        x_train: np.ndarray,
+        x_test: np.ndarray,
         feature_names: list[str],
     ) -> list[FeatureImportanceEntry]:
         """
@@ -112,7 +112,9 @@ class ExplainabilityEngine:
 
         # Method 3: permutation importance (slow but universal)
         if raw_importances is None:
-            raw_importances = self._permutation_importance(estimator, X_train, X_test, feature_names)
+            raw_importances = self._permutation_importance(
+                estimator, x_train, x_test, feature_names
+            )
 
         # Normalize to [0, 1]
         if raw_importances is not None and raw_importances.sum() > 0:
@@ -138,8 +140,8 @@ class ExplainabilityEngine:
     def _permutation_importance(
         self,
         estimator: Any,
-        X_train: np.ndarray,
-        X_test: np.ndarray,
+        x_train: np.ndarray,
+        x_test: np.ndarray,
         feature_names: list[str],
     ) -> np.ndarray:
         """Compute permutation importance as fallback."""
@@ -148,7 +150,13 @@ class ExplainabilityEngine:
 
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                result = pi(estimator, X_test, estimator.predict(X_test), n_repeats=5, random_state=42)
+                result = pi(
+                    estimator,
+                    x_test,
+                    estimator.predict(x_test),
+                    n_repeats=5,
+                    random_state=42,
+                )
             return np.abs(result.importances_mean)
         except Exception as exc:
             logger.warning("permutation_importance_failed", error=str(exc))
@@ -157,8 +165,8 @@ class ExplainabilityEngine:
     def _compute_shap(
         self,
         estimator: Any,
-        X_train: np.ndarray,
-        X_test: np.ndarray,
+        x_train: np.ndarray,
+        x_test: np.ndarray,
         max_samples: int,
     ) -> tuple[list[list[float]], float]:
         """
@@ -167,25 +175,25 @@ class ExplainabilityEngine:
         """
         import shap
 
-        sample_size = min(max_samples, len(X_test))
-        X_sample = X_test[:sample_size]
+        sample_size = min(max_samples, len(x_test))
+        x_sample = x_test[:sample_size]
 
         # Choose explainer based on model type
         try:
             explainer = shap.TreeExplainer(estimator)
-            shap_values = explainer.shap_values(X_sample)
+            shap_values = explainer.shap_values(x_sample)
             base_value = float(np.mean(explainer.expected_value))
         except Exception:
             try:
-                background = X_train[:min(50, len(X_train))]
+                background = x_train[: min(50, len(x_train))]
                 explainer = shap.LinearExplainer(estimator, background)
-                shap_values = explainer.shap_values(X_sample)
+                shap_values = explainer.shap_values(x_sample)
                 base_value = float(np.mean(explainer.expected_value))
             except Exception:
                 # Universal fallback: KernelExplainer (slow)
-                background = shap.sample(X_train, min(25, len(X_train)))
+                background = shap.sample(x_train, min(25, len(x_train)))
                 explainer = shap.KernelExplainer(estimator.predict, background)
-                shap_values = explainer.shap_values(X_sample, nsamples=50)
+                shap_values = explainer.shap_values(x_sample, nsamples=50)
                 base_value = float(np.mean(explainer.expected_value))
 
         # Normalize multi-class SHAP to per-class mean absolute values
