@@ -131,18 +131,12 @@ This project uses GitHub Actions for continuous integration and deployment. The 
 - **Backend CI** (`.github/workflows/backend-ci.yml`): Runs tests, linting, and builds Docker images for the backend
 - **Frontend CI** (`.github/workflows/frontend-ci.yml`): Runs tests, linting, type checking, and builds Docker images for the frontend
 
-### Required GitHub Secrets
+### Container Registry
 
-For Docker image pushing to work, you need to configure the following secrets in your GitHub repository settings:
+Docker images are pushed to GitHub Container Registry (GHCR) using the built-in `GITHUB_TOKEN`. No additional secrets configuration is required. Images will be available at:
 
-1. **DOCKER_USERNAME**: Your Docker Hub username
-2. **DOCKER_PASSWORD**: Your Docker Hub password or access token
-
-To add these secrets:
-1. Go to your repository on GitHub
-2. Navigate to **Settings** → **Secrets and variables** → **Actions**
-3. Click **New repository secret**
-4. Add each secret with its corresponding value
+- `ghcr.io/Hitbhalodiya1/Auto_Model_Recommendation/backend:latest`
+- `ghcr.io/Hitbhalodiya1/Auto_Model_Recommendation/frontend:latest`
 
 ### Node Version
 
