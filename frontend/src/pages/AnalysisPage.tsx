@@ -52,8 +52,6 @@ export function AnalysisPage() {
     },
   });
 
-  const isAnalysisFetching = analysisQuery.isFetching || analysisQuery.isLoading;
-
   if (!effectiveAnalysis) {
     const p = analysisQuery.data?.progress ?? 0;
     const stepsCompleted = analysisQuery.data?.steps_completed ?? 0;
