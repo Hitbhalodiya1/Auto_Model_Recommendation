@@ -135,8 +135,8 @@ This project uses GitHub Actions for continuous integration and deployment. The 
 
 Docker images are pushed to GitHub Container Registry (GHCR) using the built-in `GITHUB_TOKEN`. No additional secrets configuration is required. Images will be available at:
 
-- `ghcr.io/Hitbhalodiya1/Auto_Model_Recommendation/backend:latest`
-- `ghcr.io/Hitbhalodiya1/Auto_Model_Recommendation/frontend:latest`
+- `ghcr.io/hitbhalodiya1/autorec-backend:latest`
+- `ghcr.io/hitbhalodiya1/autorec-frontend:latest`
 
 ### Node Version
 
