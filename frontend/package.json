@@ -2,7 +2,7 @@
   "name": "autorec-frontend",
   "version": "1.0.0",
   "private": true,
-  "description": "AutoRec frontend - ML recommendation platform UI with GHCR (fixed - test)",
+  "description": "AutoRec frontend - ML recommendation platform UI with GHCR (fixed - cache)",
   "type": "module",
   "scripts": {
     "dev": "vite",
