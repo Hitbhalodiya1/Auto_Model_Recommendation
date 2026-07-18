@@ -45,15 +45,15 @@ export function DatasetsPage() {
 
   const upload = useMutation({
     mutationFn: (file: File) => datasetApi.upload(file),
-    onSuccess: (dataset: any) => {
+    onSuccess: (dataset: Dataset) => {
       qc.invalidateQueries({ queryKey: ["datasets"] });
       const id = dataset?.id;
       if (id) {
         navigate(`/datasets/${id}/analyze`);
       }
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || error.message || "Upload failed";
+    onError: (error: Error) => {
+      const message = (error as any).response?.data?.message || error.message || "Upload failed";
       alert(`Upload failed: ${message}`);
     },
   });
@@ -64,8 +64,8 @@ export function DatasetsPage() {
       qc.invalidateQueries({ queryKey: ["datasets"] });
       alert("Dataset deleted successfully");
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || error.message || "Delete failed";
+    onError: (error: Error) => {
+      const message = (error as any).response?.data?.message || error.message || "Delete failed";
       alert(`Delete failed: ${message}`);
     },
   });

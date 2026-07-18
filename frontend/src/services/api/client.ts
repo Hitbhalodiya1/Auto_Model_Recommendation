@@ -6,7 +6,7 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
 import type { APIResponse } from "@/types";
 
-const BASE_URL = (import.meta as any).env?.VITE_API_URL ?? "/api/v1";
+const BASE_URL = (import.meta.env as ImportMetaEnv & { VITE_API_URL?: string }).VITE_API_URL ?? "/api/v1";
 
 function createApiClient(): AxiosInstance {
   const client = axios.create({

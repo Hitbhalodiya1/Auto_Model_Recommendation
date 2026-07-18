@@ -8,7 +8,7 @@ import { useState } from "react";
 import { ArrowRight, FlaskConical, Loader2, X } from "lucide-react";
 import { clsx } from "clsx";
 import { experimentApi, datasetApi } from "@/services/api";
-import type { Experiment } from "@/types";
+import type { Dataset, Experiment } from "@/types";
 
 const STATUS_STYLES: Record<string, string> = {
   created: "badge-gray",
@@ -26,7 +26,7 @@ export function HistoryPage() {
   });
 
   const [showPicker, setShowPicker] = useState(false);
-  const [selectedDataset, setSelectedDataset] = useState<any>(null);
+  const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null);
   const [expName, setExpName] = useState("");
   const [targetCol, setTargetCol] = useState("");
   const { data: datasets } = useQuery({ queryKey: ["datasets"], queryFn: () => datasetApi.list() });
@@ -36,7 +36,7 @@ export function HistoryPage() {
     mutationFn: () =>
       experimentApi.create({
         name: expName,
-        dataset_id: selectedDataset?.id,
+        dataset_id: selectedDataset?.id ?? "",
         target_column: targetCol,
       }),
     onSuccess: (exp) => {
@@ -48,9 +48,9 @@ export function HistoryPage() {
     },
   });
 
-  const analyzedDatasets = datasets?.filter((d: any) => d.status === "analyzed") || [];
+  const analyzedDatasets = datasets?.filter((d: Dataset) => d.status === "analyzed") || [];
 
-  const handleDatasetSelect = (dataset: any) => {
+  const handleDatasetSelect = (dataset: Dataset) => {
     setSelectedDataset(dataset);
     setExpName(`${dataset.original_name.replace(/\.[^/.]+$/, "")} Experiment`);
     if (dataset.analysis?.suggested_target_column) {
@@ -124,7 +124,7 @@ export function HistoryPage() {
                 <p className="text-sm text-gray-500 mb-3">Select an analyzed dataset to create an experiment:</p>
                 <div className="max-h-64 overflow-auto border rounded-lg">
                   {analyzedDatasets.length ? (
-                    analyzedDatasets.map((d: any) => (
+                    analyzedDatasets.map((d: Dataset) => (
                       <button
                         key={d.id}
                         className="w-full text-left px-4 py-3 hover:bg-gray-50 border-b last:border-b-0"
@@ -177,7 +177,7 @@ export function HistoryPage() {
                       className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     >
                       <option value="">Select target column</option>
-                      {selectedDataset.analysis?.column_profiles?.map((col: any) => (
+                      {selectedDataset.analysis?.column_profiles?.map((col: { name: string; feature_type: string }) => (
                         <option key={col.name} value={col.name}>
                           {col.name} ({col.feature_type})
                         </option>
