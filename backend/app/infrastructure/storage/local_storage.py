@@ -43,9 +43,9 @@ class LocalStorageService(IStorageService):
             # Sanitize filename to prevent path traversal
             safe_name = Path(filename).name
             if experiment_id:
-                dest_dir = self._base_dir / "experiments" / experiment_id
+                dest_dir = self._base_dir / "uploads" / "experiments" / experiment_id
             else:
-                dest_dir = self._base_dir
+                dest_dir = self._base_dir / "uploads"
 
             dest_dir.mkdir(parents=True, exist_ok=True)
             dest_path = dest_dir / safe_name

@@ -63,6 +63,9 @@ def init_database() -> None:
     """
     global _engine, _session_factory
 
+    if _engine is not None and _session_factory is not None:
+        return
+
     settings = get_settings()
     _engine = _build_engine(settings.DATABASE_URL, echo=settings.DATABASE_ECHO)
     _session_factory = async_sessionmaker(
@@ -76,16 +79,16 @@ def init_database() -> None:
 
 
 def get_engine() -> AsyncEngine:
-    """Return the initialized engine. Raises if not initialized."""
+    """Return the initialized engine, initializing it on demand if needed."""
     if _engine is None:
-        raise RuntimeError("Database not initialized. Call init_database() first.")
+        init_database()
     return _engine
 
 
 def get_session_factory() -> async_sessionmaker[AsyncSession]:
-    """Return the initialized session factory."""
+    """Return the initialized session factory, initializing it on demand if needed."""
     if _session_factory is None:
-        raise RuntimeError("Database not initialized. Call init_database() first.")
+        init_database()
     return _session_factory
 
 

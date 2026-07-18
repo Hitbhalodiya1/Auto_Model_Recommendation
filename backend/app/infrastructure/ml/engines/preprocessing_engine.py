@@ -40,19 +40,39 @@ class PreprocessingResult:
 
     def __init__(
         self,
-        x_train: np.ndarray,
-        x_test: np.ndarray,
-        y_train: np.ndarray,
-        y_test: np.ndarray,
-        feature_names: list[str],
-        pipeline: Any,  # fitted sklearn Pipeline
-        label_encoder: LabelEncoder | None,
+        X_train: np.ndarray | None = None,
+        X_test: np.ndarray | None = None,
+        y_train: np.ndarray | None = None,
+        y_test: np.ndarray | None = None,
+        feature_names: list[str] | None = None,
+        pipeline: Any = None,  # fitted sklearn Pipeline
+        label_encoder: LabelEncoder | None = None,
+        **kwargs: Any,
     ) -> None:
-        self.X_train = x_train
-        self.X_test = x_test
+        if X_train is None and "x_train" in kwargs:
+            X_train = kwargs.pop("x_train")
+        if X_test is None and "x_test" in kwargs:
+            X_test = kwargs.pop("x_test")
+        if y_train is None and "y_train" in kwargs:
+            y_train = kwargs.pop("y_train")
+        if y_test is None and "y_test" in kwargs:
+            y_test = kwargs.pop("y_test")
+        if feature_names is None and "feature_names" in kwargs:
+            feature_names = kwargs.pop("feature_names")
+        if pipeline is None and "pipeline" in kwargs:
+            pipeline = kwargs.pop("pipeline")
+        if label_encoder is None and "label_encoder" in kwargs:
+            label_encoder = kwargs.pop("label_encoder")
+
+        if kwargs:
+            unexpected = ", ".join(sorted(kwargs))
+            raise TypeError(f"Unexpected keyword arguments: {unexpected}")
+
+        self.X_train = X_train
+        self.X_test = X_test
         self.y_train = y_train
         self.y_test = y_test
-        self.feature_names = feature_names
+        self.feature_names = feature_names or []
         self.pipeline = pipeline
         self.label_encoder = label_encoder
 

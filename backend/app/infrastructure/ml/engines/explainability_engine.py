@@ -45,20 +45,35 @@ class ExplainabilityEngine:
     def explain(
         self,
         estimator: Any,
-        x_train: np.ndarray,
-        x_test: np.ndarray,
-        feature_names: list[str],
-        model_result: ModelResult,
+        X_train: np.ndarray | None = None,
+        X_test: np.ndarray | None = None,
+        feature_names: list[str] | None = None,
+        model_result: ModelResult | None = None,
         max_shap_samples: int = SHAP_MAX_BACKGROUND_SAMPLES,
+        **kwargs: Any,
     ) -> ExplainabilityResult:
         """
         Compute feature importances and optionally SHAP values.
         Never raises — errors are captured in the result.
         """
+        if X_train is None and "x_train" in kwargs:
+            X_train = kwargs.pop("x_train")
+        if X_test is None and "x_test" in kwargs:
+            X_test = kwargs.pop("x_test")
+        if feature_names is None and "feature_names" in kwargs:
+            feature_names = kwargs.pop("feature_names")
+        if model_result is None and "model_result" in kwargs:
+            model_result = kwargs.pop("model_result")
+
+        if model_result is None:
+            raise TypeError("model_result is required")
+        if X_train is None or X_test is None or feature_names is None:
+            raise TypeError("X_train, X_test, and feature_names are required")
+
         result = ExplainabilityResult(model_result_id=model_result.id)
 
         # 1. Feature importance
-        importances = self._get_feature_importance(estimator, x_train, x_test, feature_names)
+        importances = self._get_feature_importance(estimator, X_train, X_test, feature_names)
         result.feature_importances = importances
         result.top_features = [fi.feature for fi in importances[:FEATURE_IMPORTANCE_TOP_N]]
         result.method_used = self._detect_method(estimator)
@@ -67,7 +82,7 @@ class ExplainabilityEngine:
         if model_result.supports_shap:
             try:
                 shap_vals, base_val = self._compute_shap(
-                    estimator, x_train, x_test, max_shap_samples
+                    estimator, X_train, X_test, max_shap_samples
                 )
                 result.shap_values = shap_vals
                 result.shap_base_value = base_val

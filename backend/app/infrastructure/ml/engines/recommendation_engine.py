@@ -96,7 +96,12 @@ class RecommendationEngine:
         if not model_results:
             raise ValueError("No model results to recommend from.")
 
-        # Use the new recommendation pipeline
+        # Preserve the original backward-compatible behavior when no richer context
+        # is supplied, which matches the existing tests and use cases.
+        if model_configs is None and dataset_analysis is None:
+            return self._legacy_recommend(evaluations, model_results, task_type, experiment_id)
+
+        # Use the new recommendation pipeline when richer context is available.
         if model_configs is None:
             # Build model configs from model results for backward compatibility
             model_configs = self._build_model_configs_from_results(model_results)
