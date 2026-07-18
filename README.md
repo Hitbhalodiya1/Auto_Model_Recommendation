@@ -138,6 +138,8 @@ Docker images are pushed to GitHub Container Registry (GHCR) using the built-in 
 - `ghcr.io/hitbhalodiya1/autorec-backend:latest`
 - `ghcr.io/hitbhalodiya1/autorec-frontend:latest`
 
+Note: Repository names are automatically converted to lowercase for Docker compliance.
+
 ### Node Version
 
 The frontend CI workflow uses Node.js 24 by default. If you need to use Node 20 temporarily, you can set the `ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true` environment variable in the workflow.
