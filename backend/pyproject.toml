@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "autorec-backend"
 version = "1.0.0"
-description = "AutoRec - Intelligent ML Model Recommendation Platform with automated model selection and CI/CD"
+description = "AutoRec - Intelligent ML Model Recommendation Platform with automated model selection, CI/CD and GHCR"
 requires-python = ">=3.11"
 dependencies = [
     "fastapi==0.111.0",
