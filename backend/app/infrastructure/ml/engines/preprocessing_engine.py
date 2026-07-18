@@ -363,11 +363,7 @@ class PreprocessingEngine:
 
         # Handle class imbalance
         smote_step = next(
-            (
-                s
-                for s in pipeline_def.steps
-                if s.name == "handle_class_imbalance"
-            ),
+            (s for s in pipeline_def.steps if s.name == "handle_class_imbalance"),
             None,
         )
         if smote_step:
