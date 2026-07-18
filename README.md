@@ -17,6 +17,7 @@ AutoRec is a full-stack machine learning recommendation platform that automates 
 - [Installation](#installation)
 - [Local Development](#local-development)
 - [Running with Docker](#running-with-docker)
+- [CI/CD](#cicd)
 - [API Documentation](#api-documentation)
 - [Project Architecture](#project-architecture)
 - [Folder Structure](#folder-structure)
@@ -120,6 +121,32 @@ Backend environment variables (see `backend/.env.example`):
 - `UPLOAD_DIR` - Path for uploaded files
 - `MAX_UPLOAD_SIZE_MB` - Maximum file upload size
 - `CORS_ORIGINS` - Allowed CORS origins
+
+## CI/CD
+
+This project uses GitHub Actions for continuous integration and deployment. The workflows are located in `.github/workflows/`.
+
+### Workflows
+
+- **Backend CI** (`.github/workflows/backend-ci.yml`): Runs tests, linting, and builds Docker images for the backend
+- **Frontend CI** (`.github/workflows/frontend-ci.yml`): Runs tests, linting, type checking, and builds Docker images for the frontend
+
+### Required GitHub Secrets
+
+For Docker image pushing to work, you need to configure the following secrets in your GitHub repository settings:
+
+1. **DOCKER_USERNAME**: Your Docker Hub username
+2. **DOCKER_PASSWORD**: Your Docker Hub password or access token
+
+To add these secrets:
+1. Go to your repository on GitHub
+2. Navigate to **Settings** → **Secrets and variables** → **Actions**
+3. Click **New repository secret**
+4. Add each secret with its corresponding value
+
+### Node Version
+
+The frontend CI workflow uses Node.js 24 by default. If you need to use Node 20 temporarily, you can set the `ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true` environment variable in the workflow.
 
 ## API Documentation
 
