@@ -62,5 +62,3 @@ jobs:
           context: ./backend
           push: false
           tags: autorec-backend:latest
-          cache-from: type=registry,ref=autorec-backend:latest
-          cache-to: type=inline
