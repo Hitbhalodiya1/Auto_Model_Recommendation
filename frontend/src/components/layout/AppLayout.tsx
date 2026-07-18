@@ -8,7 +8,6 @@ import {
   BarChart3,
   Brain,
   Database,
-  FlaskConical,
   History,
   Home,
   Menu,

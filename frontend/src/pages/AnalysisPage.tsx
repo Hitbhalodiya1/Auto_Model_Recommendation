@@ -15,7 +15,7 @@ export function AnalysisPage() {
   const [expName, setExpName] = useState("");
   const [targetCol, setTargetCol] = useState("");
 
-  const { data: dataset, isLoading } = useQuery({
+  const { data: dataset } = useQuery({
     queryKey: ["dataset", datasetId],
     queryFn: () => datasetApi.get(datasetId!),
     enabled: !!datasetId,
@@ -54,7 +54,7 @@ export function AnalysisPage() {
 
   const isAnalysisFetching = analysisQuery.isFetching || analysisQuery.isLoading;
 
-  if (!effectiveAnalysis && isAnalysisFetching) {
+  if (!effectiveAnalysis) {
     const p = analysisQuery.data?.progress ?? 0;
     const stepsCompleted = analysisQuery.data?.steps_completed ?? 0;
     const stepsTotal = analysisQuery.data?.steps_total ?? null;
@@ -84,7 +84,7 @@ export function AnalysisPage() {
     );
   }
 
-  if (!effectiveAnalysis && !isAnalysisFetching) {
+  if (!effectiveAnalysis) {
     return (
       <div className="text-center py-20 text-gray-500">
         Analysis not available yet. Please wait for analysis to complete or click Re-run.
@@ -101,9 +101,9 @@ export function AnalysisPage() {
   }
 
   const qualityColor =
-    effectiveAnalysis.quality_score >= 80
+    (effectiveAnalysis?.quality_score ?? 0) >= 80
       ? "text-success-700"
-      : effectiveAnalysis.quality_score >= 60
+      : (effectiveAnalysis?.quality_score ?? 0) >= 60
       ? "text-warning-700"
       : "text-danger-700";
 
@@ -128,16 +128,16 @@ export function AnalysisPage() {
       <div className="card p-6 flex items-center gap-6">
         <div className="text-center">
           <div className={`text-5xl font-bold ${qualityColor}`}>
-            {effectiveAnalysis.quality_score}
+            {effectiveAnalysis?.quality_score ?? 0}
           </div>
           <div className="text-sm text-gray-500 mt-1">Quality Score</div>
         </div>
         <div className="flex-1 grid grid-cols-4 gap-4">
             {[
-            { label: "Rows", value: effectiveAnalysis.row_count.toLocaleString() },
-            { label: "Columns", value: effectiveAnalysis.column_count },
-            { label: "Missing %", value: `${(effectiveAnalysis.missing_value_pct * 100).toFixed(1)}%` },
-            { label: "Duplicates", value: effectiveAnalysis.duplicate_row_count },
+            { label: "Rows", value: (effectiveAnalysis?.row_count ?? 0).toLocaleString() },
+            { label: "Columns", value: effectiveAnalysis?.column_count ?? 0 },
+            { label: "Missing %", value: `${((effectiveAnalysis?.missing_value_pct ?? 0) * 100).toFixed(1)}%` },
+            { label: "Duplicates", value: effectiveAnalysis?.duplicate_row_count ?? 0 },
           ].map(({ label, value }) => (
             <div key={label} className="text-center">
               <div className="text-xl font-semibold text-gray-900">{value}</div>
@@ -152,15 +152,15 @@ export function AnalysisPage() {
         <CheckCircle size={18} className="text-success-500 shrink-0" />
         <div>
           <span className="font-medium">Detected task:</span>{" "}
-          <span className="text-primary-700 font-semibold">{effectiveAnalysis.task_type.replace("_", " ")}</span>
-          {effectiveAnalysis.suggested_target_column && (
+          <span className="text-primary-700 font-semibold">{(effectiveAnalysis?.task_type ?? "unknown").replace("_", " ")}</span>
+          {effectiveAnalysis?.suggested_target_column && (
             <> · Suggested target: <code className="bg-gray-100 px-1 rounded text-sm">{effectiveAnalysis.suggested_target_column}</code></>
           )}
         </div>
       </div>
 
       {/* Warnings */}
-      {effectiveAnalysis.warnings.length > 0 && (
+      {effectiveAnalysis?.warnings && effectiveAnalysis.warnings.length > 0 && (
         <div className="card p-4 space-y-2">
           <h3 className="font-semibold text-gray-900 flex items-center gap-2">
             <AlertTriangle size={16} className="text-warning-500" /> Warnings
@@ -172,7 +172,7 @@ export function AnalysisPage() {
       )}
 
       {/* Recommendations */}
-      {effectiveAnalysis.recommendations.length > 0 && (
+      {effectiveAnalysis?.recommendations && effectiveAnalysis.recommendations.length > 0 && (
         <div className="card p-4 space-y-2">
           <h3 className="font-semibold text-gray-900">Preprocessing Recommendations</h3>
           <ul className="text-sm text-gray-700 space-y-1">
@@ -203,7 +203,7 @@ export function AnalysisPage() {
               onChange={(e) => setTargetCol(e.target.value)}
             >
               <option value="">Select target column…</option>
-              {effectiveAnalysis.column_profiles.map((cp) => (
+              {effectiveAnalysis?.column_profiles?.map((cp) => (
                 <option key={cp.name} value={cp.name}>{cp.name}</option>
               ))}
             </select>

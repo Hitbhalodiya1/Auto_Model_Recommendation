@@ -5,7 +5,7 @@
 import { useCallback, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Database, Loader2, Trash2, Upload } from "lucide-react";
+import { Database, Loader2, Upload } from "lucide-react";
 import { clsx } from "clsx";
 import { datasetApi } from "@/services/api";
 import type { Dataset } from "@/types";

@@ -9,7 +9,7 @@ import { clsx } from "clsx";
 import { trainingApi } from "@/services/api";
 import type { ModelResult } from "@/types";
 
-function MetricBadge({ value, higher = true }: { value: number; higher?: boolean }) {
+function MetricBadge({ value }: { value: number }) {
   const pct = Math.min(Math.max(value, 0), 1) * 100;
   const color = pct >= 80 ? "text-success-700" : pct >= 60 ? "text-warning-700" : "text-danger-700";
   return <span className={clsx("font-mono font-medium", color)}>{value.toFixed(4)}</span>;

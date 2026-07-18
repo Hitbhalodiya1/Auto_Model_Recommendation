@@ -3,7 +3,7 @@
  */
 
 import { useNavigate, useParams } from "react-router-dom";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { CheckCircle, Loader2 } from "lucide-react";
 import { preprocessingApi } from "@/services/api";
 
