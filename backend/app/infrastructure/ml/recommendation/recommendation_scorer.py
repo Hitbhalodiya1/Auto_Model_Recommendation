@@ -34,6 +34,7 @@ logger = get_logger(__name__)
 @dataclass
 class ModelScores:
     """Comprehensive scores for a single model."""
+
     model_id: str
     config_name: str
 
@@ -56,6 +57,7 @@ class ModelScores:
 @dataclass
 class ScoringReport:
     """Aggregated scoring results across all models."""
+
     scores: dict[str, ModelScores]  # model_id -> scores
     best_overall: str | None  # model_id
     best_predictive: str | None  # model_id
@@ -67,7 +69,7 @@ class ScoringReport:
 class RecommendationScorer:
     """
     Computes multi-dimensional scores for model recommendation.
-    
+
     This component combines analysis from other analyzers to produce
     comprehensive scores for each model across multiple dimensions.
     """
@@ -85,14 +87,14 @@ class RecommendationScorer:
     ) -> ScoringReport:
         """
         Compute scores for all models.
-        
+
         Args:
             model_results: List of model results
             generalization_report: Generalization analysis results
             compatibility_report: Dataset compatibility analysis results
             primary_metric: The primary metric name for performance scoring
             mode: Recommendation mode for weighting
-            
+
         Returns:
             ScoringReport with scores for each model
         """
@@ -214,9 +216,7 @@ class RecommendationScorer:
                 return min(100, value * 100)
         return 50.0  # Default if metric not available
 
-    def _compute_generalization_score(
-        self, gen_analysis: GeneralizationAnalysis | None
-    ) -> float:
+    def _compute_generalization_score(self, gen_analysis: GeneralizationAnalysis | None) -> float:
         """Compute generalization score (0-100)."""
         if gen_analysis:
             return gen_analysis.normalized_score
@@ -247,9 +247,7 @@ class RecommendationScorer:
 
         return max(0.0, min(100.0, score))
 
-    def _compute_compatibility_score(
-        self, compat_score: CompatibilityScore | None
-    ) -> float:
+    def _compute_compatibility_score(self, compat_score: CompatibilityScore | None) -> float:
         """Compute dataset compatibility score (0-100)."""
         if compat_score:
             return compat_score.overall_score
@@ -283,5 +281,3 @@ class RecommendationScorer:
         if not scores:
             return None
         return max(scores.items(), key=lambda x: getattr(x[1], field))[0]
-
-

@@ -11,6 +11,7 @@ from enum import Enum
 
 class GeneralizationLevel(Enum):
     """Classification of generalization gap."""
+
     EXCELLENT = "excellent"
     GOOD = "good"
     MODERATE = "moderate"
@@ -19,6 +20,7 @@ class GeneralizationLevel(Enum):
 
 class RecommendationMode(Enum):
     """Different recommendation strategies."""
+
     BEST_OVERALL = "best_overall"
     BEST_PREDICTIVE = "best_predictive"
     FASTEST = "fastest"
@@ -28,6 +30,7 @@ class RecommendationMode(Enum):
 @dataclass
 class GeneralizationThresholds:
     """Thresholds for classifying generalization gaps."""
+
     excellent_gap_pct: float = 3.0
     good_gap_pct: float = 7.0
     moderate_gap_pct: float = 15.0
@@ -49,41 +52,49 @@ class ScoringWeights:
     """Weights for different scoring components (0-1, should sum to 1.0)."""
 
     # Primary metric weights by recommendation mode
-    best_overall: dict[str, float] = field(default_factory=lambda: {
-        "predictive_performance": 0.35,
-        "generalization": 0.25,
-        "robustness": 0.15,
-        "dataset_compatibility": 0.10,
-        "interpretability": 0.10,
-        "speed": 0.05,
-    })
+    best_overall: dict[str, float] = field(
+        default_factory=lambda: {
+            "predictive_performance": 0.35,
+            "generalization": 0.25,
+            "robustness": 0.15,
+            "dataset_compatibility": 0.10,
+            "interpretability": 0.10,
+            "speed": 0.05,
+        }
+    )
 
-    best_predictive: dict[str, float] = field(default_factory=lambda: {
-        "predictive_performance": 0.50,
-        "generalization": 0.30,
-        "robustness": 0.15,
-        "dataset_compatibility": 0.05,
-        "interpretability": 0.0,
-        "speed": 0.0,
-    })
+    best_predictive: dict[str, float] = field(
+        default_factory=lambda: {
+            "predictive_performance": 0.50,
+            "generalization": 0.30,
+            "robustness": 0.15,
+            "dataset_compatibility": 0.05,
+            "interpretability": 0.0,
+            "speed": 0.0,
+        }
+    )
 
-    fastest: dict[str, float] = field(default_factory=lambda: {
-        "predictive_performance": 0.20,
-        "generalization": 0.20,
-        "robustness": 0.10,
-        "dataset_compatibility": 0.10,
-        "interpretability": 0.05,
-        "speed": 0.35,
-    })
+    fastest: dict[str, float] = field(
+        default_factory=lambda: {
+            "predictive_performance": 0.20,
+            "generalization": 0.20,
+            "robustness": 0.10,
+            "dataset_compatibility": 0.10,
+            "interpretability": 0.05,
+            "speed": 0.35,
+        }
+    )
 
-    most_explainable: dict[str, float] = field(default_factory=lambda: {
-        "predictive_performance": 0.25,
-        "generalization": 0.20,
-        "robustness": 0.15,
-        "dataset_compatibility": 0.10,
-        "interpretability": 0.30,
-        "speed": 0.0,
-    })
+    most_explainable: dict[str, float] = field(
+        default_factory=lambda: {
+            "predictive_performance": 0.25,
+            "generalization": 0.20,
+            "robustness": 0.15,
+            "dataset_compatibility": 0.10,
+            "interpretability": 0.30,
+            "speed": 0.0,
+        }
+    )
 
     def get_weights(self, mode: RecommendationMode) -> dict[str, float]:
         """Get weights for a specific recommendation mode."""

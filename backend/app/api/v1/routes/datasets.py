@@ -29,6 +29,7 @@ def _ok(data, message: str = "") -> dict:
 
 # ── Upload ────────────────────────────────────────────────────────────────────
 
+
 @router.post("/upload", status_code=status.HTTP_201_CREATED)
 async def upload_dataset(
     background_tasks: BackgroundTasks,
@@ -51,6 +52,7 @@ async def upload_dataset(
 
 # ── List ──────────────────────────────────────────────────────────────────────
 
+
 @router.get("")
 async def list_datasets(
     limit: int = Query(DEFAULT_PAGE_SIZE, ge=1, le=MAX_PAGE_SIZE),
@@ -64,6 +66,7 @@ async def list_datasets(
 
 # ── Get ───────────────────────────────────────────────────────────────────────
 
+
 @router.get("/{dataset_id}")
 async def get_dataset(
     dataset_id: str,
@@ -75,6 +78,7 @@ async def get_dataset(
 
 
 # ── Preview ───────────────────────────────────────────────────────────────────
+
 
 @router.get("/{dataset_id}/preview")
 async def preview_dataset(
@@ -89,6 +93,7 @@ async def preview_dataset(
 
 
 # ── Analyze (manual trigger) ──────────────────────────────────────────────────
+
 
 @router.post("/{dataset_id}/analyze", status_code=status.HTTP_202_ACCEPTED)
 async def analyze_dataset(
@@ -109,6 +114,7 @@ async def analyze_dataset(
 
 # ── Analysis Results ──────────────────────────────────────────────────────────
 
+
 @router.get("/{dataset_id}/analysis")
 async def get_analysis(
     dataset_id: str,
@@ -119,6 +125,7 @@ async def get_analysis(
         AnalysisNotCompleteError,
         DatasetNotFoundError,
     )
+
     dataset = await repo.get_by_id(dataset_id)
     if not dataset:
         raise DatasetNotFoundError(dataset_id)
@@ -126,10 +133,12 @@ async def get_analysis(
     if not analysis:
         raise AnalysisNotCompleteError(dataset_id)
     from app.application.use_cases.dataset.dataset_use_cases import _map_analysis
+
     return _ok(_map_analysis(analysis).model_dump())
 
 
 # ── Delete ────────────────────────────────────────────────────────────────────
+
 
 @router.delete("/{dataset_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_dataset(

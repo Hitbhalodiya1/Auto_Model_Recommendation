@@ -19,6 +19,7 @@ logger = get_logger(__name__)
 @dataclass
 class FilteringResult:
     """Result of the filtering process."""
+
     candidates: list[ModelResult]
     filtered_out: list[ModelResult]
     reasons: dict[str, str]  # model_id -> reason for filtering
@@ -27,7 +28,7 @@ class FilteringResult:
 class CandidateFilter:
     """
     Filters model candidates based on quality thresholds.
-    
+
     Only removes models with severe issues. Moderate overfitting is allowed
     as it may be acceptable depending on the use case.
     """
@@ -38,10 +39,10 @@ class CandidateFilter:
     def filter(self, model_results: list[ModelResult]) -> FilteringResult:
         """
         Filter model results to remove invalid candidates.
-        
+
         Args:
             model_results: List of all model results from training
-            
+
         Returns:
             FilteringResult with valid candidates and filtered models
         """
@@ -79,7 +80,7 @@ class CandidateFilter:
     def _should_filter(self, mr: ModelResult) -> str | None:
         """
         Determine if a model should be filtered out.
-        
+
         Returns None if model should be kept, otherwise returns reason string.
         """
         # Check if training/evaluation failed
@@ -91,7 +92,11 @@ class CandidateFilter:
         if primary_metric is None:
             return "No primary metric available"
 
-        if not (self._thresholds.min_primary_metric <= primary_metric <= self._thresholds.max_primary_metric):
+        if not (
+            self._thresholds.min_primary_metric
+            <= primary_metric
+            <= self._thresholds.max_primary_metric
+        ):
             return f"Primary metric {primary_metric} out of valid range"
 
         # Check for severe overfitting

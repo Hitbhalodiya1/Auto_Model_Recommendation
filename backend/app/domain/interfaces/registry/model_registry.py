@@ -17,15 +17,15 @@ class ModelConfig:
     One plugin can expose many ModelConfigs.
     """
 
-    name: str                            # unique identifier e.g. "rf_gini_100"
-    display_name: str                    # human-readable e.g. "Random Forest (Gini, 100 trees)"
-    algorithm_family: str                # e.g. "RandomForest"
+    name: str  # unique identifier e.g. "rf_gini_100"
+    display_name: str  # human-readable e.g. "Random Forest (Gini, 100 trees)"
+    algorithm_family: str  # e.g. "RandomForest"
     params: dict[str, Any] = field(default_factory=dict)
     task_types: list[TaskType] = field(default_factory=list)
     requires_scaling: bool = False
     supports_feature_importance: bool = False
     supports_shap: bool = False
-    interpretability_score: int = 1      # 1 = black box, 5 = fully interpretable
+    interpretability_score: int = 1  # 1 = black box, 5 = fully interpretable
 
     # Enhanced metadata for intelligent recommendation
     handles_missing_values: bool = False

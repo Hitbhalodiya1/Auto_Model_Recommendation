@@ -10,7 +10,9 @@ class IStorageService(ABC):
     """Contract for file storage operations."""
 
     @abstractmethod
-    async def save_upload(self, file_bytes: bytes, filename: str, experiment_id: str | None = None) -> str:
+    async def save_upload(
+        self, file_bytes: bytes, filename: str, experiment_id: str | None = None
+    ) -> str:
         """
         Persist uploaded file bytes.
         Returns the storage path/key that can be used to retrieve the file.

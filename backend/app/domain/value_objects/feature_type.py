@@ -2,10 +2,10 @@
 FeatureType value object — describes the type of a dataset column.
 """
 
-from enum import Enum
+from enum import StrEnum
 
 
-class FeatureType(str, Enum):
+class FeatureType(StrEnum):
     """The inferred type of a dataset column."""
 
     NUMERIC_CONTINUOUS = "numeric_continuous"

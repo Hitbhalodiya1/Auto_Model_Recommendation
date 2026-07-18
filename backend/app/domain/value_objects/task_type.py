@@ -2,10 +2,10 @@
 TaskType value object — represents the detected ML task.
 """
 
-from enum import Enum
+from enum import StrEnum
 
 
-class TaskType(str, Enum):
+class TaskType(StrEnum):
     """The machine learning task detected from dataset characteristics."""
 
     BINARY_CLASSIFICATION = "binary_classification"

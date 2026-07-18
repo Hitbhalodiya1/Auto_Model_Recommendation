@@ -32,13 +32,17 @@ class ExperimentRepository(IExperimentRepository):
         preprocessing_json = None
         if experiment.preprocessing_pipeline:
             pipeline = experiment.preprocessing_pipeline
-            preprocessing_json = json.dumps({
-                "id": pipeline.id,
-                "steps": [vars(s) for s in pipeline.steps],
-                "pipeline_path": pipeline.pipeline_path,
-                "is_executed": pipeline.is_executed,
-                "executed_at": pipeline.executed_at.isoformat() if pipeline.executed_at else None,
-            })
+            preprocessing_json = json.dumps(
+                {
+                    "id": pipeline.id,
+                    "steps": [vars(s) for s in pipeline.steps],
+                    "pipeline_path": pipeline.pipeline_path,
+                    "is_executed": pipeline.is_executed,
+                    "executed_at": pipeline.executed_at.isoformat()
+                    if pipeline.executed_at
+                    else None,
+                }
+            )
 
         existing = await self._session.get(ExperimentModel, experiment.id)
         if existing:
@@ -180,9 +184,7 @@ class ExperimentRepository(IExperimentRepository):
         return recommendation
 
     async def get_recommendation(self, experiment_id: str) -> Recommendation | None:
-        stmt = select(RecommendationModel).where(
-            RecommendationModel.experiment_id == experiment_id
-        )
+        stmt = select(RecommendationModel).where(RecommendationModel.experiment_id == experiment_id)
         result = await self._session.execute(stmt)
         model = result.scalar_one_or_none()
         return self._rec_to_entity(model) if model else None
@@ -251,7 +253,9 @@ class ExperimentRepository(IExperimentRepository):
             experiment_id=model.experiment_id,
             model_result_id=model.model_result_id,
             composite_score=model.composite_score,
-            score_breakdown=json.loads(model.score_breakdown_json) if model.score_breakdown_json else {},
+            score_breakdown=json.loads(model.score_breakdown_json)
+            if model.score_breakdown_json
+            else {},
             rationale=json.loads(model.rationale_json) if model.rationale_json else [],
             explanation_text=model.explanation_text or "",
             all_rankings=json.loads(model.all_rankings_json) if model.all_rankings_json else [],

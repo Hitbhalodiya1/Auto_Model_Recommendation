@@ -31,6 +31,7 @@ logger = get_logger(__name__)
 
 def _map_column_profile(cp: ColumnProfile):
     from app.application.dto.dataset_dto import ColumnProfileDTO
+
     return ColumnProfileDTO(**vars(cp))
 
 
@@ -86,9 +87,7 @@ class UploadDatasetUseCase:
         self._storage = storage
         self._max_bytes = max_upload_bytes
 
-    async def execute(
-        self, file_bytes: bytes, filename: str
-    ) -> DatasetUploadResponse:
+    async def execute(self, file_bytes: bytes, filename: str) -> DatasetUploadResponse:
         # Validate extension
         ext = Path(filename).suffix.lower()
         if ext not in ALLOWED_EXTENSIONS:
@@ -101,7 +100,9 @@ class UploadDatasetUseCase:
         # Check for duplicate filename
         existing_datasets = await self._repo.list_all(limit=1000, offset=0)
         filename_only = Path(filename).name
-        if any(d.filename == filename_only or d.original_name == filename for d in existing_datasets):
+        if any(
+            d.filename == filename_only or d.original_name == filename for d in existing_datasets
+        ):
             raise DuplicateDatasetError(filename)
 
         # Store file
@@ -250,6 +251,7 @@ class DeleteDatasetUseCase:
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
+
 
 def _read_dataframe(file_bytes: bytes, filename: str) -> pd.DataFrame:
     """Parse CSV or Excel bytes into a DataFrame."""

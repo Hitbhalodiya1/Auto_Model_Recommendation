@@ -21,6 +21,7 @@ logger = get_logger(__name__)
 @dataclass
 class RecommendationCandidate:
     """A candidate model for recommendation."""
+
     model_id: str
     model_result: ModelResult
     scores: ModelScores
@@ -31,6 +32,7 @@ class RecommendationCandidate:
 @dataclass
 class StrategyResult:
     """Result of applying a recommendation strategy."""
+
     mode: RecommendationMode
     candidates: list[RecommendationCandidate]
     selected: RecommendationCandidate | None
@@ -39,6 +41,7 @@ class StrategyResult:
 @dataclass
 class MultiModeRecommendations:
     """Recommendations across all modes."""
+
     best_overall: StrategyResult
     best_predictive: StrategyResult
     fastest: StrategyResult
@@ -48,7 +51,7 @@ class MultiModeRecommendations:
 class RecommendationStrategy:
     """
     Implements different recommendation strategies based on use case.
-    
+
     Each strategy prioritizes different aspects of model performance:
     - Best Overall: Balanced approach for production deployment
     - Best Predictive: Maximum accuracy regardless of complexity
@@ -66,11 +69,11 @@ class RecommendationStrategy:
     ) -> MultiModeRecommendations:
         """
         Generate recommendations for all modes.
-        
+
         Args:
             model_results: List of model results
             scoring_report: Scoring report with all model scores
-            
+
         Returns:
             MultiModeRecommendations with recommendations for each mode
         """
@@ -78,25 +81,19 @@ class RecommendationStrategy:
         model_map = {mr.id: mr for mr in model_results}
 
         # Generate recommendations for each mode
-        best_overall = self._recommend_best_overall(
-            model_map, scoring_report
-        )
-        best_predictive = self._recommend_best_predictive(
-            model_map, scoring_report
-        )
-        fastest = self._recommend_fastest(
-            model_map, scoring_report
-        )
-        most_explainable = self._recommend_most_explainable(
-            model_map, scoring_report
-        )
+        best_overall = self._recommend_best_overall(model_map, scoring_report)
+        best_predictive = self._recommend_best_predictive(model_map, scoring_report)
+        fastest = self._recommend_fastest(model_map, scoring_report)
+        most_explainable = self._recommend_most_explainable(model_map, scoring_report)
 
         logger.info(
             "multi_mode_recommendations_generated",
             best_overall=best_overall.selected.model_id if best_overall.selected else None,
             best_predictive=best_predictive.selected.model_id if best_predictive.selected else None,
             fastest=fastest.selected.model_id if fastest.selected else None,
-            most_explainable=most_explainable.selected.model_id if most_explainable.selected else None,
+            most_explainable=most_explainable.selected.model_id
+            if most_explainable.selected
+            else None,
         )
 
         return MultiModeRecommendations(
@@ -113,7 +110,7 @@ class RecommendationStrategy:
     ) -> StrategyResult:
         """
         Recommend the best overall model for production.
-        
+
         Priority:
         1. Generalization (most important)
         2. Predictive performance
@@ -158,7 +155,7 @@ class RecommendationStrategy:
     ) -> StrategyResult:
         """
         Recommend the model with best predictive performance.
-        
+
         Ignores interpretability and resource constraints.
         Maximizes predictive performance and generalization.
         """
@@ -182,10 +179,7 @@ class RecommendationStrategy:
 
         # Sort by predictive performance and generalization
         candidates.sort(
-            key=lambda c: (
-                c.scores.predictive_performance * 0.6
-                + c.scores.generalization * 0.4
-            ),
+            key=lambda c: c.scores.predictive_performance * 0.6 + c.scores.generalization * 0.4,
             reverse=True,
         )
 
@@ -204,7 +198,7 @@ class RecommendationStrategy:
     ) -> StrategyResult:
         """
         Recommend the fastest model for inference.
-        
+
         Prioritizes prediction speed while maintaining acceptable performance.
         """
         candidates = []
@@ -250,7 +244,7 @@ class RecommendationStrategy:
     ) -> StrategyResult:
         """
         Recommend the most explainable model.
-        
+
         Prioritizes interpretability while maintaining acceptable performance.
         """
         candidates = []
@@ -342,9 +336,9 @@ class RecommendationStrategy:
             rationale.append("Fast prediction speed")
 
         if mr.prediction_time_s < 0.01:
-            rationale.append(f"Sub-millisecond inference ({mr.prediction_time_s*1000:.2f}ms)")
+            rationale.append(f"Sub-millisecond inference ({mr.prediction_time_s * 1000:.2f}ms)")
         elif mr.prediction_time_s < 0.1:
-            rationale.append(f"Low latency inference ({mr.prediction_time_s*1000:.1f}ms)")
+            rationale.append(f"Low latency inference ({mr.prediction_time_s * 1000:.1f}ms)")
 
         if scores.predictive_performance >= 60:
             rationale.append("Maintains acceptable performance")

@@ -11,11 +11,9 @@ Every recommendation must explain WHY a model was selected, including:
 """
 
 from dataclasses import dataclass
-from typing import Any
 
-from app.core.recommendation_config import RecommendationMode
 from app.core.logging import get_logger
-from app.domain.entities.model_result import ModelResult
+from app.core.recommendation_config import RecommendationMode
 from app.infrastructure.ml.recommendation.generalization_analyzer import GeneralizationAnalysis
 from app.infrastructure.ml.recommendation.recommendation_strategy import RecommendationCandidate
 
@@ -25,6 +23,7 @@ logger = get_logger(__name__)
 @dataclass
 class ModelExplanation:
     """Natural language explanation for a model recommendation."""
+
     model_id: str
     config_name: str
     display_name: str
@@ -41,13 +40,14 @@ class ModelExplanation:
 @dataclass
 class ExplanationReport:
     """Aggregated explanations for all recommended models."""
+
     explanations: dict[str, ModelExplanation]  # model_id -> explanation
 
 
 class ExplanationGenerator:
     """
     Generates human-readable explanations for model recommendations.
-    
+
     The explanations are transparent and explainable, covering:
     - Why this model was selected
     - Its strengths and weaknesses
@@ -65,11 +65,11 @@ class ExplanationGenerator:
     ) -> ExplanationReport:
         """
         Generate explanations for all recommended models.
-        
+
         Args:
             candidates: List of recommendation candidates
             generalization_analyses: Generalization analysis for each model
-            
+
         Returns:
             ExplanationReport with explanations for each model
         """
@@ -77,10 +77,8 @@ class ExplanationGenerator:
 
         for candidate in candidates:
             gen_analysis = generalization_analyses.get(candidate.model_id)
-            
-            explanation = self._generate_single_explanation(
-                candidate, gen_analysis
-            )
+
+            explanation = self._generate_single_explanation(candidate, gen_analysis)
             explanations[candidate.model_id] = explanation
 
         logger.info(
@@ -97,16 +95,13 @@ class ExplanationGenerator:
     ) -> ModelExplanation:
         """Generate explanation for a single model."""
         mr = candidate.model_result
-        scores = candidate.scores
         mode = candidate.mode
 
         # Primary reason
         primary_reason = self._generate_primary_reason(candidate, gen_analysis)
 
         # Full explanation text
-        explanation_text = self._generate_explanation_text(
-            candidate, gen_analysis, primary_reason
-        )
+        explanation_text = self._generate_explanation_text(candidate, gen_analysis, primary_reason)
 
         # Strengths
         strengths = self._generate_strengths(candidate, gen_analysis)
@@ -154,16 +149,16 @@ class ExplanationGenerator:
                 return "Highest predictive performance with good generalization"
             else:
                 return "Best balance of performance, generalization, and efficiency"
-        
+
         elif mode == RecommendationMode.BEST_PREDICTIVE:
             return f"Highest predictive performance ({scores.predictive_performance:.1f}/100)"
-        
+
         elif mode == RecommendationMode.FASTEST:
-            return f"Fastest inference speed ({mr.prediction_time_s*1000:.2f}ms per prediction)"
-        
+            return f"Fastest inference speed ({mr.prediction_time_s * 1000:.2f}ms per prediction)"
+
         elif mode == RecommendationMode.MOST_EXPLAINABLE:
             return f"Highest interpretability score ({mr.interpretability_score}/5)"
-        
+
         return "Selected based on overall performance metrics"
 
     def _generate_explanation_text(
@@ -179,14 +174,12 @@ class ExplanationGenerator:
 
         parts = [
             f"**{mr.display_name}** was selected as the {mode.value.replace('_', ' ')} model.",
-            f"{primary_reason}."
+            f"{primary_reason}.",
         ]
 
         # Add performance details
         if mr.primary_metric is not None:
-            parts.append(
-                f"It achieved a primary metric score of {mr.primary_metric:.4f}"
-            )
+            parts.append(f"It achieved a primary metric score of {mr.primary_metric:.4f}")
 
         # Add generalization details
         if gen_analysis:
@@ -205,10 +198,10 @@ class ExplanationGenerator:
                 parts.append("and is well-suited for the dataset characteristics")
             if scores.speed >= 70:
                 parts.append("with fast inference suitable for production deployment")
-        
+
         elif mode == RecommendationMode.FASTEST:
             parts.append("making it ideal for real-time applications")
-        
+
         elif mode == RecommendationMode.MOST_EXPLAINABLE:
             if mr.supports_feature_importance:
                 parts.append("and supports feature importance extraction")
@@ -241,7 +234,7 @@ class ExplanationGenerator:
                 strengths.append("Good generalization capability")
             elif gen_analysis.level.value == "moderate":
                 strengths.append("Moderate generalization")
-        
+
         # Robustness
         if scores.robustness >= 70:
             strengths.append("Robust and stable performance")
@@ -313,7 +306,6 @@ class ExplanationGenerator:
         candidate: RecommendationCandidate,
     ) -> list[str]:
         """Generate recommended use cases."""
-        mr = candidate.model_result
         scores = candidate.scores
         recommended = []
 
@@ -348,7 +340,6 @@ class ExplanationGenerator:
         candidate: RecommendationCandidate,
     ) -> list[str]:
         """Generate not recommended use cases."""
-        mr = candidate.model_result
         scores = candidate.scores
         not_recommended = []
 

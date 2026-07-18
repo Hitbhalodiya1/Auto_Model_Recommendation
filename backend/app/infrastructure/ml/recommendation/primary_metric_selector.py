@@ -24,6 +24,7 @@ logger = get_logger(__name__)
 
 class MetricPriority(Enum):
     """Priority levels for metrics."""
+
     PRIMARY = "primary"
     SECONDARY = "secondary"
     TERTIARY = "tertiary"
@@ -32,6 +33,7 @@ class MetricPriority(Enum):
 @dataclass
 class MetricDefinition:
     """Definition of an evaluation metric."""
+
     name: str
     display_name: str
     priority: MetricPriority
@@ -42,6 +44,7 @@ class MetricDefinition:
 @dataclass
 class MetricSelection:
     """Result of metric selection."""
+
     primary_metric: str
     secondary_metrics: list[str]
     rationale: str
@@ -50,7 +53,7 @@ class MetricSelection:
 class PrimaryMetricSelector:
     """
     Selects the primary evaluation metric based on task type and dataset characteristics.
-    
+
     The selection is automatic and considers:
     - Task type (classification, regression, clustering)
     - Class balance (for classification)
@@ -78,7 +81,12 @@ class PrimaryMetricSelector:
     CLUSTERING_METRICS = [
         MetricDefinition("silhouette_score", "Silhouette Score", MetricPriority.PRIMARY),
         MetricDefinition("calinski_harabasz", "Calinski-Harabasz Index", MetricPriority.SECONDARY),
-        MetricDefinition("davies_bouldin", "Davies-Bouldin Index", MetricPriority.TERTIARY, higher_is_better=False),
+        MetricDefinition(
+            "davies_bouldin",
+            "Davies-Bouldin Index",
+            MetricPriority.TERTIARY,
+            higher_is_better=False,
+        ),
     ]
 
     def __init__(self) -> None:
@@ -97,12 +105,12 @@ class PrimaryMetricSelector:
     ) -> MetricSelection:
         """
         Select the primary metric for the given task and dataset characteristics.
-        
+
         Args:
             task_type: The type of ML task
             is_imbalanced: Whether the dataset has class imbalance (for classification)
             available_metrics: List of metrics actually available in the results
-            
+
         Returns:
             MetricSelection with primary metric and rationale
         """

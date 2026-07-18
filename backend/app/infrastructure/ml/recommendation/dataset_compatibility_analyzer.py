@@ -20,6 +20,7 @@ logger = get_logger(__name__)
 @dataclass
 class DatasetCharacteristics:
     """Key characteristics of the dataset for compatibility analysis."""
+
     row_count: int
     column_count: int
     missing_value_pct: float
@@ -34,6 +35,7 @@ class DatasetCharacteristics:
 @dataclass
 class CompatibilityScore:
     """Compatibility score for a single model."""
+
     model_id: str
     config_name: str
     algorithm_family: str
@@ -44,6 +46,7 @@ class CompatibilityScore:
 @dataclass
 class CompatibilityReport:
     """Aggregated compatibility analysis across all models."""
+
     scores: dict[str, CompatibilityScore]  # model_id -> score
     best_compatible: str | None  # model_id
 
@@ -51,7 +54,7 @@ class CompatibilityReport:
 class DatasetCompatibilityAnalyzer:
     """
     Analyzes dataset compatibility for different algorithms.
-    
+
     The compatibility score considers:
     - Dataset size (small vs large datasets favor different algorithms)
     - Feature count (dimensionality)
@@ -78,11 +81,11 @@ class DatasetCompatibilityAnalyzer:
     ) -> CompatibilityReport:
         """
         Analyze compatibility for all models.
-        
+
         Args:
             model_configs: Mapping of model_id to ModelConfig
             dataset_analysis: Dataset analysis results from analysis engine
-            
+
         Returns:
             CompatibilityReport with scores for each model
         """

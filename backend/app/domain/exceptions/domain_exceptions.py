@@ -18,6 +18,7 @@ class AutoRecError(Exception):
 
 # ── Not Found ─────────────────────────────────────────────────────────────────
 
+
 class NotFoundError(AutoRecError):
     """Raised when a requested resource does not exist."""
 
@@ -47,6 +48,7 @@ class ModelResultNotFoundError(NotFoundError):
 
 
 # ── Validation ────────────────────────────────────────────────────────────────
+
 
 class ValidationError(AutoRecError):
     """Raised when input data fails business rule validation."""
@@ -96,6 +98,7 @@ class InvalidTargetColumnError(ValidationError):
 
 # ── State Errors ──────────────────────────────────────────────────────────────
 
+
 class InvalidStateError(AutoRecError):
     """Raised when an operation is attempted in an invalid state."""
 
@@ -128,6 +131,7 @@ class PreprocessingNotCompleteError(InvalidStateError):
 
 # ── ML Errors ─────────────────────────────────────────────────────────────────
 
+
 class MLError(AutoRecError):
     """Base class for ML pipeline errors."""
 
@@ -154,6 +158,7 @@ class UnsupportedTaskTypeError(MLError):
 
 
 # ── Infrastructure Errors ─────────────────────────────────────────────────────
+
 
 class StorageError(AutoRecError):
     """Raised when a file storage operation fails."""

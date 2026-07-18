@@ -40,11 +40,7 @@ class ModelRegistry(IModelRegistry):
 
     def get_models_for_task(self, task: TaskType) -> list[ModelConfig]:
         """Return all ModelConfigs compatible with the given task type."""
-        return [
-            config
-            for _, config in self._config_map.values()
-            if task in config.task_types
-        ]
+        return [config for _, config in self._config_map.values() if task in config.task_types]
 
     def build_estimator(self, config: ModelConfig):
         """Build and return a scikit-learn compatible estimator."""
@@ -66,6 +62,7 @@ class ModelRegistry(IModelRegistry):
     def summary(self) -> dict:
         """Return a summary dict for logging/health checks."""
         from collections import defaultdict
+
         by_task: dict = defaultdict(list)
         for _, config in self._config_map.values():
             for task in config.task_types:

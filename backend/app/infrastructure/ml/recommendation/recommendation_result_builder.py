@@ -59,6 +59,7 @@ logger = get_logger(__name__)
 @dataclass
 class RecommendationPipelineResult:
     """Complete result of the recommendation pipeline."""
+
     filtering_result: FilteringResult
     metric_selection: MetricSelection
     generalization_report: GeneralizationReport
@@ -72,7 +73,7 @@ class RecommendationPipelineResult:
 class RecommendationResultBuilder:
     """
     Orchestrates the entire recommendation pipeline.
-    
+
     This component coordinates all the individual recommendation components
     to produce a comprehensive recommendation result.
     """
@@ -83,12 +84,8 @@ class RecommendationResultBuilder:
         # Initialize components
         self._candidate_filter = CandidateFilter(self._config.filtering)
         self._metric_selector = PrimaryMetricSelector()
-        self._generalization_analyzer = GeneralizationAnalyzer(
-            self._config.generalization
-        )
-        self._compatibility_analyzer = DatasetCompatibilityAnalyzer(
-            self._config.compatibility
-        )
+        self._generalization_analyzer = GeneralizationAnalyzer(self._config.generalization)
+        self._compatibility_analyzer = DatasetCompatibilityAnalyzer(self._config.compatibility)
         self._scorer = RecommendationScorer(self._config.scoring)
         self._strategy = RecommendationStrategy()
         self._explanation_generator = ExplanationGenerator()
@@ -104,14 +101,14 @@ class RecommendationResultBuilder:
     ) -> RecommendationPipelineResult:
         """
         Build the complete recommendation result.
-        
+
         Args:
             model_results: List of model results from training
             model_configs: Mapping of model_id to ModelConfig
             dataset_analysis: Dataset analysis results (optional)
             task_type: The ML task type
             experiment_id: Experiment ID for logging
-            
+
         Returns:
             RecommendationPipelineResult with all pipeline outputs
         """
@@ -134,9 +131,7 @@ class RecommendationResultBuilder:
         # Stage 2: Primary Metric Selection
         is_imbalanced = dataset_analysis.get("is_imbalanced", False) if dataset_analysis else False
         available_metrics = self._get_available_metrics(candidates)
-        metric_selection = self._metric_selector.select(
-            task_type, is_imbalanced, available_metrics
-        )
+        metric_selection = self._metric_selector.select(task_type, is_imbalanced, available_metrics)
 
         logger.info(
             "primary_metric_selected",
@@ -154,9 +149,7 @@ class RecommendationResultBuilder:
             )
         else:
             # Create empty compatibility report if no dataset analysis
-            compatibility_report = self._build_empty_compatibility_report(
-                model_configs
-            )
+            compatibility_report = self._build_empty_compatibility_report(model_configs)
 
         # Stage 5: Multi-dimensional Scoring
         scoring_report = self._scorer.score(
@@ -196,7 +189,9 @@ class RecommendationResultBuilder:
         logger.info(
             "recommendation_pipeline_completed",
             experiment_id=experiment_id,
-            best_overall=formatted_recommendations.best_overall.config_name if formatted_recommendations.best_overall else None,
+            best_overall=formatted_recommendations.best_overall.config_name
+            if formatted_recommendations.best_overall
+            else None,
         )
 
         return RecommendationPipelineResult(
@@ -275,7 +270,9 @@ class RecommendationResultBuilder:
                 secondary_metrics=[],
                 rationale="No valid candidates, using default",
             ),
-            generalization_report=GeneralizationReport(analyses={}, best_generalized=None, worst_generalized=None),
+            generalization_report=GeneralizationReport(
+                analyses={}, best_generalized=None, worst_generalized=None
+            ),
             compatibility_report=CompatibilityReport(scores={}, best_compatible=None),
             scoring_report=ScoringReport(
                 scores={},
@@ -286,16 +283,10 @@ class RecommendationResultBuilder:
                 most_explainable=None,
             ),
             multi_mode_recommendations=MultiModeRecommendations(
-                best_overall=StrategyResult(
-                    mode=None, candidates=[], selected=None
-                ),
-                best_predictive=StrategyResult(
-                    mode=None, candidates=[], selected=None
-                ),
+                best_overall=StrategyResult(mode=None, candidates=[], selected=None),
+                best_predictive=StrategyResult(mode=None, candidates=[], selected=None),
                 fastest=StrategyResult(mode=None, candidates=[], selected=None),
-                most_explainable=StrategyResult(
-                    mode=None, candidates=[], selected=None
-                ),
+                most_explainable=StrategyResult(mode=None, candidates=[], selected=None),
             ),
             explanation_report=ExplanationReport(explanations={}),
             formatted_recommendations=FormattedRecommendations(

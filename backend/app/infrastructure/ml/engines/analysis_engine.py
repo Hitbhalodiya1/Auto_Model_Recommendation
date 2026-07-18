@@ -83,9 +83,7 @@ class AnalysisEngine:
             TaskType.BINARY_CLASSIFICATION.value,
             TaskType.MULTICLASS_CLASSIFICATION.value,
         ):
-            class_distribution, is_imbalanced = self._check_class_imbalance(
-                df[suggested_target]
-            )
+            class_distribution, is_imbalanced = self._check_class_imbalance(df[suggested_target])
         if progress_callback:
             progress_callback(4, total_steps)
 
@@ -266,9 +264,7 @@ class AnalysisEngine:
 
     # ── Class Imbalance ───────────────────────────────────────────────────────
 
-    def _check_class_imbalance(
-        self, target: pd.Series
-    ) -> tuple[dict[str, int], bool]:
+    def _check_class_imbalance(self, target: pd.Series) -> tuple[dict[str, int], bool]:
         counts = target.value_counts()
         class_distribution = {str(k): int(v) for k, v in counts.items()}
         total = counts.sum()
@@ -331,15 +327,11 @@ class AnalysisEngine:
             score -= 10
 
         # Constant / near-constant columns: -3 each, up to -15
-        constant_penalty = sum(
-            1 for p in profiles if p.unique_count <= 1
-        )
+        constant_penalty = sum(1 for p in profiles if p.unique_count <= 1)
         score -= min(15, constant_penalty * 3)
 
         # High missing columns: -2 each, up to -10
-        high_missing = sum(
-            1 for p in profiles if p.null_pct > MISSING_VALUE_CRITICAL_THRESHOLD
-        )
+        high_missing = sum(1 for p in profiles if p.null_pct > MISSING_VALUE_CRITICAL_THRESHOLD)
         score -= min(10, high_missing * 2)
 
         return round(max(0.0, min(100.0, score)), 1)
@@ -408,7 +400,8 @@ class AnalysisEngine:
             )
 
         has_categorical = any(
-            p.feature_type in (FeatureType.CATEGORICAL_NOMINAL.value, FeatureType.CATEGORICAL_ORDINAL.value)
+            p.feature_type
+            in (FeatureType.CATEGORICAL_NOMINAL.value, FeatureType.CATEGORICAL_ORDINAL.value)
             for p in profiles
         )
         if has_categorical:
@@ -420,7 +413,8 @@ class AnalysisEngine:
         skewed = [p.name for p in profiles if p.skewness and abs(p.skewness) > SKEWNESS_THRESHOLD]
         if skewed:
             recs.append(
-                f"Apply log or Box-Cox transformation to reduce skewness in: {', '.join(skewed[:5])}."
+                "Apply log or Box-Cox transformation to reduce skewness in: "
+                f"{', '.join(skewed[:5])}."
             )
 
         if is_imbalanced:
@@ -429,9 +423,11 @@ class AnalysisEngine:
                 "This improves recall for the minority class."
             )
 
-        has_numeric = any(p.feature_type in (
-            FeatureType.NUMERIC_CONTINUOUS.value, FeatureType.NUMERIC_DISCRETE.value
-        ) for p in profiles)
+        has_numeric = any(
+            p.feature_type
+            in (FeatureType.NUMERIC_CONTINUOUS.value, FeatureType.NUMERIC_DISCRETE.value)
+            for p in profiles
+        )
         if has_numeric:
             recs.append(
                 "Scale numeric features. "

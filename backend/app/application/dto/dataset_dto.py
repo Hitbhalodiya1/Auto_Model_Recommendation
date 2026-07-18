@@ -10,6 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 # ── Shared ────────────────────────────────────────────────────────────────────
 
+
 class APIResponse(BaseModel):
     """Standardized API response envelope."""
 
@@ -21,6 +22,7 @@ class APIResponse(BaseModel):
 
 
 # ── Dataset DTOs ──────────────────────────────────────────────────────────────
+
 
 class DatasetUploadResponse(BaseModel):
     id: str
@@ -94,6 +96,7 @@ class DatasetPreviewDTO(BaseModel):
 
 # ── Experiment DTOs ───────────────────────────────────────────────────────────
 
+
 class CreateExperimentRequest(BaseModel):
     name: str = Field(..., min_length=1, max_length=255)
     description: str = ""
@@ -115,6 +118,7 @@ class ExperimentDTO(BaseModel):
 
 
 # ── Preprocessing DTOs ────────────────────────────────────────────────────────
+
 
 class PreprocessingStepDTO(BaseModel):
     name: str
@@ -141,6 +145,7 @@ class PreprocessingStatusDTO(BaseModel):
 
 # ── Training DTOs ─────────────────────────────────────────────────────────────
 
+
 class TrainingStatusDTO(BaseModel):
     experiment_id: str
     status: str
@@ -150,6 +155,7 @@ class TrainingStatusDTO(BaseModel):
 
 
 # ── Evaluation / Model Result DTOs ────────────────────────────────────────────
+
 
 class ModelResultDTO(BaseModel):
     id: str
@@ -176,6 +182,7 @@ class ModelResultDTO(BaseModel):
 
 # ── Recommendation DTOs ───────────────────────────────────────────────────────
 
+
 class RecommendationDTO(BaseModel):
     id: str
     experiment_id: str
@@ -190,6 +197,7 @@ class RecommendationDTO(BaseModel):
 
 
 # ── Explainability DTOs ───────────────────────────────────────────────────────
+
 
 class FeatureImportanceDTO(BaseModel):
     feature: str

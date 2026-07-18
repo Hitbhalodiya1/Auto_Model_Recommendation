@@ -3,7 +3,6 @@ Dependency injection for FastAPI routes.
 All use cases and services are wired here and injected via Depends().
 """
 
-
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -44,6 +43,7 @@ def get_model_registry() -> ModelRegistry:
     global _registry
     if _registry is None:
         from app.infrastructure.ml.registry.registry_bootstrap import build_registry
+
         _registry = build_registry()
     return _registry
 
@@ -77,6 +77,7 @@ _training_bg_service: TrainingBackgroundService | None = None
 
 
 # ── Per-request dependencies ──────────────────────────────────────────────────
+
 
 def get_dataset_repo(
     db: AsyncSession = Depends(get_db_session),
@@ -146,6 +147,7 @@ def get_training_background_service(
 
 
 # ── Use case factories ────────────────────────────────────────────────────────
+
 
 def get_upload_use_case(
     repo: DatasetRepository = Depends(get_dataset_repo),

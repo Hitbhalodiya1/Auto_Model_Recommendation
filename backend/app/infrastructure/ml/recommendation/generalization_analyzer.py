@@ -21,6 +21,7 @@ logger = get_logger(__name__)
 @dataclass
 class GeneralizationAnalysis:
     """Result of generalization analysis for a single model."""
+
     model_id: str
     config_name: str
     training_score: float
@@ -35,6 +36,7 @@ class GeneralizationAnalysis:
 @dataclass
 class GeneralizationReport:
     """Aggregated generalization analysis across all models."""
+
     analyses: dict[str, GeneralizationAnalysis]  # model_id -> analysis
     best_generalized: str | None  # model_id
     worst_generalized: str | None  # model_id
@@ -43,10 +45,10 @@ class GeneralizationReport:
 class GeneralizationAnalyzer:
     """
     Analyzes model generalization using cross-validation scores.
-    
+
     The generalization gap is computed as:
     gap = training_score - cv_score
-    
+
     This gap is then classified:
     - Gap < 3%: Excellent
     - Gap 3-7%: Good
@@ -60,10 +62,10 @@ class GeneralizationAnalyzer:
     def analyze(self, model_results: list[ModelResult]) -> GeneralizationReport:
         """
         Analyze generalization for all models.
-        
+
         Args:
             model_results: List of model results with training and CV scores
-            
+
         Returns:
             GeneralizationReport with analysis for each model
         """
@@ -139,7 +141,7 @@ class GeneralizationAnalyzer:
     def _normalize_gap_score(self, gap_pct: float) -> float:
         """
         Normalize gap percentage to a 0-100 score.
-        
+
         Smaller gaps get higher scores.
         """
         if gap_pct < self._thresholds.excellent_gap_pct:

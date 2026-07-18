@@ -6,11 +6,11 @@ Represents an uploaded dataset and its lifecycle status.
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 
-class DatasetStatus(str, Enum):
+class DatasetStatus(StrEnum):
     UPLOADED = "uploaded"
     ANALYZING = "analyzing"
     ANALYZED = "analyzed"

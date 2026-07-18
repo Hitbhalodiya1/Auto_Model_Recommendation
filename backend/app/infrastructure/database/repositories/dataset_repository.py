@@ -74,17 +74,19 @@ class DatasetRepository(IDatasetRepository):
 
     async def save_analysis(self, analysis: DatasetAnalysis) -> DatasetAnalysis:
         existing = await self._get_analysis_model(analysis.dataset_id)
-        analysis_json = json.dumps({
-            "column_profiles": [vars(cp) for cp in analysis.column_profiles],
-            "class_distribution": analysis.class_distribution,
-            "correlation_matrix": analysis.correlation_matrix,
-            "outlier_counts": analysis.outlier_counts,
-            "warnings": analysis.warnings,
-            "recommendations": analysis.recommendations,
-            "progress": getattr(analysis, "progress", 0),
-            "steps_total": getattr(analysis, "steps_total", None),
-            "steps_completed": getattr(analysis, "steps_completed", None),
-        })
+        analysis_json = json.dumps(
+            {
+                "column_profiles": [vars(cp) for cp in analysis.column_profiles],
+                "class_distribution": analysis.class_distribution,
+                "correlation_matrix": analysis.correlation_matrix,
+                "outlier_counts": analysis.outlier_counts,
+                "warnings": analysis.warnings,
+                "recommendations": analysis.recommendations,
+                "progress": getattr(analysis, "progress", 0),
+                "steps_total": getattr(analysis, "steps_total", None),
+                "steps_completed": getattr(analysis, "steps_completed", None),
+            }
+        )
 
         if existing:
             existing.task_type = analysis.task_type
@@ -149,9 +151,7 @@ class DatasetRepository(IDatasetRepository):
         if model.analysis_json:
             extra = json.loads(model.analysis_json)
 
-        column_profiles = [
-            ColumnProfile(**cp) for cp in extra.get("column_profiles", [])
-        ]
+        column_profiles = [ColumnProfile(**cp) for cp in extra.get("column_profiles", [])]
 
         progress = extra.get("progress", 0)
         steps_total = extra.get("steps_total")

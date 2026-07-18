@@ -4,7 +4,6 @@ Similar to analysis_background_service, this ensures the training use case
 runs with a fresh database session independent of the HTTP request lifecycle.
 """
 
-
 from app.application.use_cases.training.training_use_cases import RunTrainingUseCase
 from app.core.logging import get_logger
 from app.domain.interfaces.services.storage_service import IStorageService

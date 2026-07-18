@@ -110,6 +110,7 @@ async def logging_middleware(request: Request, call_next: Callable) -> Response:
 
     # Bind request_id to structlog context for all log calls in this request
     from structlog.contextvars import bind_contextvars, clear_contextvars
+
     clear_contextvars()
     bind_contextvars(request_id=request_id)
 

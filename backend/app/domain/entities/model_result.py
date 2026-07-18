@@ -18,10 +18,10 @@ class ModelResult:
 
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     experiment_id: str = ""
-    algorithm_name: str = ""       # e.g. "RandomForest"
-    config_name: str = ""          # e.g. "rf_gini_100"
-    display_name: str = ""         # e.g. "Random Forest (Gini, 100 trees)"
-    configuration: dict = field(default_factory=dict)    # hyperparameters
+    algorithm_name: str = ""  # e.g. "RandomForest"
+    config_name: str = ""  # e.g. "rf_gini_100"
+    display_name: str = ""  # e.g. "Random Forest (Gini, 100 trees)"
+    configuration: dict = field(default_factory=dict)  # hyperparameters
     metrics: dict[str, float] = field(default_factory=dict)
     cv_score: float | None = None
     cv_std: float | None = None
@@ -63,6 +63,6 @@ class Recommendation:
     composite_score: float = 0.0
     score_breakdown: dict[str, float] = field(default_factory=dict)
     rationale: list[str] = field(default_factory=list)  # bullet points
-    explanation_text: str = ""                           # plain-language paragraph
+    explanation_text: str = ""  # plain-language paragraph
     all_rankings: list[dict[str, Any]] = field(default_factory=list)
     created_at: datetime = field(default_factory=datetime.utcnow)

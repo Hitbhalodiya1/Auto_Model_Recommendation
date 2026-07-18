@@ -6,10 +6,10 @@ Represents a complete ML workflow run against a dataset.
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 
 
-class ExperimentStatus(str, Enum):
+class ExperimentStatus(StrEnum):
     CREATED = "created"
     PREPROCESSING = "preprocessing"
     TRAINING = "training"
@@ -22,11 +22,11 @@ class ExperimentStatus(str, Enum):
 class PreprocessingStep:
     """A single step in the preprocessing pipeline."""
 
-    name: str                   # e.g. "handle_missing_values"
-    display_name: str           # e.g. "Handle Missing Values"
-    strategy: str               # e.g. "median_imputation"
+    name: str  # e.g. "handle_missing_values"
+    display_name: str  # e.g. "Handle Missing Values"
+    strategy: str  # e.g. "median_imputation"
     params: dict = field(default_factory=dict)
-    explanation: str = ""       # human-readable rationale
+    explanation: str = ""  # human-readable rationale
     affects_columns: list[str] = field(default_factory=list)
 
 
@@ -37,7 +37,7 @@ class PreprocessingPipeline:
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     experiment_id: str = ""
     steps: list[PreprocessingStep] = field(default_factory=list)
-    pipeline_path: str | None = None   # path to serialized .pkl
+    pipeline_path: str | None = None  # path to serialized .pkl
     executed_at: datetime | None = None
     is_executed: bool = False
 

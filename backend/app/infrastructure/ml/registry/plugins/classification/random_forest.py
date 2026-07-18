@@ -27,7 +27,12 @@ class RandomForestPlugin(IBaseModel):
                 name="rf_entropy_100",
                 display_name="Random Forest (Entropy, 100 trees)",
                 algorithm_family="RandomForest",
-                params={"n_estimators": 100, "criterion": "entropy", "random_state": 42, "n_jobs": -1},
+                params={
+                    "n_estimators": 100,
+                    "criterion": "entropy",
+                    "random_state": 42,
+                    "n_jobs": -1,
+                },
                 task_types=_TASKS,
                 requires_scaling=False,
                 supports_feature_importance=True,

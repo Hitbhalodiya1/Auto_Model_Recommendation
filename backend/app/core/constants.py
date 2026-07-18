@@ -19,12 +19,12 @@ ALLOWED_MIME_TYPES: Final[frozenset[str]] = frozenset(
 # ── Dataset Analysis ──────────────────────────────────────────────────────────
 PREVIEW_ROWS: Final[int] = 100
 MIN_ROWS_FOR_TRAINING: Final[int] = 20
-HIGH_CARDINALITY_THRESHOLD: Final[int] = 50          # unique values → treat as categorical
-MISSING_VALUE_CRITICAL_THRESHOLD: Final[float] = 0.5 # >50% missing → critical warning
+HIGH_CARDINALITY_THRESHOLD: Final[int] = 50  # unique values → treat as categorical
+MISSING_VALUE_CRITICAL_THRESHOLD: Final[float] = 0.5  # >50% missing → critical warning
 OUTLIER_IQR_MULTIPLIER: Final[float] = 1.5
 SKEWNESS_THRESHOLD: Final[float] = 1.0
 CORRELATION_STRONG_THRESHOLD: Final[float] = 0.85
-CLASS_IMBALANCE_THRESHOLD: Final[float] = 0.15       # minority class < 15% → imbalanced
+CLASS_IMBALANCE_THRESHOLD: Final[float] = 0.15  # minority class < 15% → imbalanced
 
 # ── ML Engine ─────────────────────────────────────────────────────────────────
 SCALER_NONE: Final[str] = "none"

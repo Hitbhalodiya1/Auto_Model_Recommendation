@@ -25,6 +25,7 @@ def _ok(data, message: str = "") -> dict:
 
 # ── Training ──────────────────────────────────────────────────────────────────
 
+
 @router.post("/experiments/{experiment_id}/training/start", status_code=status.HTTP_202_ACCEPTED)
 async def start_training(
     experiment_id: str,
@@ -56,6 +57,7 @@ async def get_training_status(
 ):
     """Poll the training status of an experiment."""
     from app.domain.exceptions.domain_exceptions import ExperimentNotFoundError
+
     exp = await repo.get_by_id(experiment_id)
     if not exp:
         raise ExperimentNotFoundError(experiment_id)
@@ -74,6 +76,7 @@ async def get_training_results(
 
 
 # ── Evaluation ────────────────────────────────────────────────────────────────
+
 
 @router.get("/experiments/{experiment_id}/evaluation")
 async def get_evaluation_summary(
@@ -94,14 +97,17 @@ async def get_model_evaluation(
 ):
     """Get detailed evaluation metrics for a specific model."""
     from app.domain.exceptions.domain_exceptions import ModelResultNotFoundError
+
     mr = await repo.get_model_result_by_id(model_id)
     if not mr:
         raise ModelResultNotFoundError(model_id)
     from app.application.use_cases.training.training_use_cases import _map_model_result
+
     return _ok(_map_model_result(mr).model_dump())
 
 
 # ── Recommendation ────────────────────────────────────────────────────────────
+
 
 @router.get("/experiments/{experiment_id}/recommendation")
 async def get_recommendation(
@@ -115,6 +121,7 @@ async def get_recommendation(
 
 
 # ── Explainability ────────────────────────────────────────────────────────────
+
 
 @router.post("/experiments/{experiment_id}/explain/{model_id}", status_code=status.HTTP_200_OK)
 async def explain_model(

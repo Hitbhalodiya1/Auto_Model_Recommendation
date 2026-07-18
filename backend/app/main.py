@@ -43,6 +43,7 @@ async def lifespan(app: FastAPI):
 
     # Warm up the model registry
     from app.api.v1.dependencies import get_model_registry
+
     registry = get_model_registry()
     logger.info("startup_complete", registry_configs=registry.total_configs)
 

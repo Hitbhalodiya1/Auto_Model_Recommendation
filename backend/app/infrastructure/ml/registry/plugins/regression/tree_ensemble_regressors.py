@@ -81,17 +81,19 @@ class KNNRegressorPlugin(IBaseModel):
         configs = []
         for k in (3, 5, 7):
             for weights in ("uniform", "distance"):
-                configs.append(ModelConfig(
-                    name=f"knnr_k{k}_{weights}",
-                    display_name=f"KNN Regressor (k={k}, {weights})",
-                    algorithm_family="KNNRegressor",
-                    params={"n_neighbors": k, "weights": weights},
-                    task_types=_TASKS,
-                    requires_scaling=True,
-                    supports_feature_importance=False,
-                    supports_shap=True,
-                    interpretability_score=3,
-                ))
+                configs.append(
+                    ModelConfig(
+                        name=f"knnr_k{k}_{weights}",
+                        display_name=f"KNN Regressor (k={k}, {weights})",
+                        algorithm_family="KNNRegressor",
+                        params={"n_neighbors": k, "weights": weights},
+                        task_types=_TASKS,
+                        requires_scaling=True,
+                        supports_feature_importance=False,
+                        supports_shap=True,
+                        interpretability_score=3,
+                    )
+                )
         return configs
 
     def build(self, config: ModelConfig) -> KNeighborsRegressor:
